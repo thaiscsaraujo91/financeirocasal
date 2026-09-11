@@ -1,0 +1,5654 @@
+<title>Painel do Cartão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    color-scheme: light;
+    --page:      #F5F8FC;
+    --surface:   #FFFFFF;
+    --surface-2: #EEF3FA;
+    --border:    rgba(23,43,77,0.10);
+    --text-1:    #172B4D;
+    --text-2:    #57678A;
+    --text-3:    #93A0BD;
+    --navy:      #003B7A;
+    --royal:     #0057B8;
+    --lightblue: #4DA3FF;
+    --paleblue:  #DCEEFF;
+    --accent:    var(--royal);
+    --accent-soft: rgba(0,87,184,0.10);
+    --accent-track: var(--paleblue);
+    --good:      #0CA34A;
+    --bad:       #D0393B;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      color-scheme: dark;
+      --page:      #0A1220;
+      --surface:   #111B2E;
+      --surface-2: #17233A;
+      --border:    rgba(255,255,255,0.10);
+      --text-1:    #EDF2FB;
+      --text-2:    #A8B6D6;
+      --text-3:    #74839F;
+      --navy:      #7FBDFF;
+      --royal:     #4DA3FF;
+      --lightblue: #8FC6FF;
+      --paleblue:  #1B2C47;
+      --accent:    var(--royal);
+      --accent-soft: rgba(77,163,255,0.16);
+      --accent-track: #1B2C47;
+      --good:      #3ECB73;
+      --bad:       #EF6A6A;
+    }
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--page);
+    color:var(--text-1);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding: 28px 20px 64px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  h1,h2,h3{ font-family:"Manrope", system-ui, sans-serif; }
+  .eyebrow{
+    font-family:"Manrope", system-ui, sans-serif;
+    font-size:11.5px; font-weight:700; letter-spacing:.09em;
+    text-transform:uppercase; color:var(--royal);
+  }
+
+  header.top{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    gap:16px; flex-wrap:wrap;
+  }
+  header.top h1{ margin: 4px 0 6px; font-size:27px; font-weight:800; letter-spacing:-0.01em; }
+  header.top .sub{ color:var(--text-2); font-size:14px; }
+  .month-pill{
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface); border:1px solid var(--border); border-radius:10px;
+    padding:8px 12px; font-size:12.5px; color:var(--text-2);
+    box-shadow: 0 1px 2px rgba(23,43,77,0.04);
+  }
+  .month-pill svg{ flex:none; color:var(--royal); }
+  .month-pill select{
+    font:600 13px "Manrope", system-ui, sans-serif; color:var(--text-1);
+    background:transparent; border:none; outline:none; cursor:pointer;
+  }
+
+  nav.tabs{
+    display:flex; gap:4px; background:var(--surface); border:1px solid var(--border);
+    border-radius:12px; padding:4px; width:fit-content; max-width:100%; overflow-x:auto;
+    box-shadow: 0 1px 2px rgba(23,43,77,0.04);
+  }
+  nav.tabs button{
+    display:flex; align-items:center; gap:7px;
+    font:600 13.5px "Manrope", system-ui, sans-serif; color:var(--text-2);
+    background:transparent; border:none; border-radius:9px; padding:9px 16px; cursor:pointer;
+    white-space:nowrap;
+  }
+  nav.tabs button svg{ flex:none; opacity:.75; }
+  nav.tabs button.active{ background:var(--royal); color:#fff; }
+  nav.tabs button.active svg{ opacity:1; }
+
+  .page{ display:flex; flex-direction:column; gap:18px; }
+  .page[hidden]{ display:none; }
+
+  .stats{ display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; }
+  .tile{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:16px 18px; display:flex; flex-direction:column; gap:6px; min-width:0;
+    box-shadow: 0 1px 2px rgba(23,43,77,0.04);
+  }
+  .tile .icon{
+    width:30px; height:30px; border-radius:9px; background:var(--accent-soft); color:var(--royal);
+    display:flex; align-items:center; justify-content:center; margin-bottom:2px;
+  }
+  .tile .label{ font-size:12px; color:var(--text-3); font-weight:600; }
+  .tile .value{ font-family:"Manrope", system-ui, sans-serif; font-size:21px; font-weight:800; letter-spacing:-0.01em; }
+  .tile .foot{ font-size:12px; color:var(--text-2); }
+  .tile .foot.up{ color:var(--bad); font-weight:600; }
+  .tile .foot.down{ color:var(--good); font-weight:600; }
+  .meter{ margin-top:2px; height:7px; border-radius:5px; background:var(--accent-track); overflow:hidden; }
+  .meter > span{ display:block; height:100%; background:var(--royal); border-radius:5px; }
+  .meter > span.over{ background:var(--bad); }
+
+  .grid-2{ display:grid; grid-template-columns: 1.3fr 1fr; gap:14px; align-items:start; }
+  .grid-2.two-col{ grid-template-columns: 1fr 1fr; }
+  .grid-3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:14px; align-items:stretch; }
+  .card{
+    background:var(--surface); border:1px solid var(--border); border-radius:14px;
+    padding:18px 20px 20px; display:flex; flex-direction:column; min-width:0;
+    box-shadow: 0 1px 2px rgba(23,43,77,0.04);
+  }
+  .card h2{ font-size:14.5px; font-weight:700; margin:0 0 2px; }
+  .card .card-sub{ font-size:12px; color:var(--text-3); margin-bottom:14px; }
+
+  /* barras horizontais de categoria (escala monocromática de azul) */
+  .barlist{ display:flex; flex-direction:column; gap:11px; }
+  .barrow .rowtop{ display:flex; justify-content:space-between; align-items:baseline; font-size:12.5px; margin-bottom:4px; }
+  .barrow .rowtop .catname{ display:flex; align-items:center; gap:7px; color:var(--text-1); font-weight:600; }
+  .barrow .dot{ width:9px; height:9px; border-radius:50%; flex:none; }
+  .barrow .rowtop .catval{ font-variant-numeric: tabular-nums; color:var(--text-2); font-weight:600; white-space:nowrap; }
+  .track{ position:relative; height:20px; background:var(--surface-2); border-radius:6px; overflow:hidden; }
+  .fill{ position:absolute; inset:0 auto 0 0; height:100%; border-radius:6px; }
+
+  /* donut */
+  .donut-wrap{ display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+  .donut{ position:relative; width:150px; height:150px; border-radius:50%; flex:none; }
+  .donut-inner{
+    position:absolute; inset:22px; border-radius:50%; background:var(--surface);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .donut-inner .v{ font-family:"Manrope"; font-weight:800; font-size:16.5px; }
+  .donut-inner .l{ font-size:10.5px; color:var(--text-3); }
+  .donut-legend{ display:flex; flex-direction:column; gap:8px; flex:1 1 180px; min-width:160px; }
+  .donut-legend .item{ display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12.5px; }
+  .donut-legend .name{ display:flex; align-items:center; gap:7px; color:var(--text-2); font-weight:600; }
+  .donut-legend .val{ color:var(--text-1); font-weight:700; font-variant-numeric: tabular-nums; }
+
+  /* gauge (comprometimento do limite) */
+  .gauge-wrap{ display:flex; align-items:center; gap:20px; }
+  .gauge{ position:relative; width:130px; height:130px; border-radius:50%; flex:none; }
+  .gauge-inner{
+    position:absolute; inset:16px; border-radius:50%; background:var(--surface);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .gauge-inner .v{ font-family:"Manrope"; font-weight:800; font-size:22px; }
+  .gauge-inner .l{ font-size:10.5px; color:var(--text-3); }
+  .gauge-facts{ display:flex; flex-direction:column; gap:8px; font-size:12.5px; }
+  .gauge-facts .row{ display:flex; justify-content:space-between; gap:16px; color:var(--text-2); }
+  .gauge-facts .row b{ color:var(--text-1); font-variant-numeric: tabular-nums; }
+
+  /* linha (evolução) */
+  .linechart{ width:100%; height:200px; }
+  .linechart .grid-line{ stroke:var(--border); stroke-width:1; }
+  .linechart .line{ fill:none; stroke:var(--royal); stroke-width:2.5; }
+  .linechart .area{ fill:var(--accent-soft); stroke:none; }
+  .linechart .dot{ fill:var(--royal); }
+  .linechart .dot.dim{ fill:var(--lightblue); opacity:.55; }
+  .linechart .val-label{ font:700 11px "Manrope", system-ui, sans-serif; fill:var(--text-1); }
+  .linechart .x-label{ font:600 11px system-ui, sans-serif; fill:var(--text-3); }
+
+  /* pessoa (Thais / Ramon) */
+  .person-card{ display:flex; flex-direction:column; gap:12px; }
+  .person-head{ display:flex; align-items:center; gap:10px; }
+  .person-avatar{
+    width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    color:#fff; font-family:"Manrope"; font-weight:800; font-size:13.5px; flex:none;
+  }
+  .person-name{ font-family:"Manrope"; font-weight:700; font-size:15px; }
+  .person-stats{ display:flex; justify-content:space-between; gap:14px; }
+  .person-stats .col .l{ font-size:11.5px; color:var(--text-3); font-weight:600; }
+  .person-stats .col .v{ font-family:"Manrope"; font-weight:800; font-size:19px; }
+  .person-top3{ display:flex; flex-direction:column; gap:7px; margin-top:2px; }
+  .person-top3 .row{ display:flex; justify-content:space-between; font-size:12.5px; color:var(--text-2); }
+  .person-top3 .row .name{ display:flex; align-items:center; gap:6px; color:var(--text-1); font-weight:600; }
+  .person-top3 .row .pct{ font-variant-numeric: tabular-nums; color:var(--text-3); }
+
+  .couple-band{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    background:linear-gradient(135deg, var(--royal), var(--navy)); color:#fff;
+    border-radius:14px; padding:18px 22px;
+  }
+  .couple-band .l{ font-size:12.5px; opacity:.85; font-weight:600; }
+  .couple-band .v{ font-family:"Manrope"; font-weight:800; font-size:24px; margin-top:2px; }
+  .couple-band .msg{ font-size:13px; opacity:.92; max-width:34ch; text-align:right; }
+
+  .highlight-card{
+    background: var(--accent-soft); border:1px solid var(--accent-track);
+  }
+  .highlight-card .cat{ font-family:"Manrope"; font-weight:800; font-size:19px; color:var(--navy); margin:2px 0 4px; }
+  .highlight-card .tip{ margin-top:12px; padding-top:12px; border-top:1px solid var(--accent-track); font-size:12.5px; color:var(--text-2); line-height:1.55; }
+  .highlight-card .tip b{ color:var(--text-1); }
+
+  .badge-lead{ font-size:13px; color:var(--text-2); max-width:34ch; }
+  .badge-lead b{ color:inherit; }
+
+  .growth-list{ display:flex; flex-direction:column; gap:10px; }
+  .growth-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:13px; }
+  .growth-row .name{ display:flex; align-items:center; gap:7px; font-weight:600; color:var(--text-1); }
+  .growth-row .delta{ font-weight:700; font-variant-numeric: tabular-nums; white-space:nowrap; }
+  .growth-row .delta.up{ color:var(--bad); }
+  .growth-row .delta.down{ color:var(--good); }
+
+  .clickable{ cursor:pointer; transition:opacity .12s ease; }
+  .clickable:hover{ opacity:.72; }
+  .barrow.clickable:hover .fill{ filter:brightness(1.08); }
+  .donut-legend .item.clickable:hover{ background:var(--surface-2); border-radius:6px; }
+  .daybars .col.clickable:hover{ opacity:1; filter:brightness(1.15); }
+  .person-top3 .row.clickable:hover{ background:var(--surface-2); border-radius:6px; }
+
+  .lc-filters{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+  .lc-filters input, .lc-filters select{
+    font:600 12.5px "Manrope", system-ui, sans-serif; color:var(--text-1);
+    background:var(--surface-2); border:1px solid var(--border); border-radius:9px;
+    padding:8px 11px; outline:none; min-width:0;
+  }
+  .lc-filters input{ flex:1 1 200px; font-weight:500; }
+  .lc-filters select{ flex:0 1 170px; cursor:pointer; }
+  .lc-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:4px; }
+  .filter-chip{
+    display:inline-flex; align-items:center; gap:6px; font:600 12px "Manrope", system-ui, sans-serif;
+    color:var(--royal); background:var(--accent-soft); border:1px solid var(--accent-track);
+    border-radius:999px; padding:5px 6px 5px 12px; cursor:pointer;
+  }
+  .filter-chip span{ font-size:14px; line-height:1; opacity:.7; }
+  .filter-chip:hover span{ opacity:1; }
+  .lc-resumo{ font-size:12.5px; color:var(--text-2); font-weight:600; margin:6px 0 14px; }
+
+  table.mini{ width:100%; border-collapse:collapse; font-size:13px; table-layout:fixed; }
+  table.mini thead th{
+    text-align:left; font-weight:600; color:var(--text-3); font-size:11px; letter-spacing:.03em;
+    text-transform:uppercase; padding:0 8px 8px 0; border-bottom:1px solid var(--border);
+    white-space:normal; overflow-wrap:break-word;
+  }
+  table.mini thead th.col-narrow{ width:84px; }
+  table.mini thead th.col-freq{ width:110px; }
+  table.mini thead th.col-num{ width:110px; }
+  table.mini tbody td{ padding:9px 8px 9px 0; border-bottom:1px solid var(--border); color:var(--text-2); vertical-align:middle; overflow-wrap:anywhere; }
+  table.mini tbody tr:last-child td{ border-bottom:none; }
+  table.mini td.num{ text-align:right; font-variant-numeric: tabular-nums; color:var(--text-1); font-weight:600; white-space:nowrap; }
+  table.mini td.estab{ color:var(--text-1); font-weight:500; }
+  table.mini .empty{ color:var(--text-3); text-align:center; padding:20px 0; }
+  .table-scroll{ overflow-x:auto; }
+  @media (max-width:520px){
+    table.mini{ font-size:11.5px; }
+    table.mini thead th.col-narrow{ width:46px; }
+    table.mini thead th.col-freq{ width:70px; }
+    table.mini thead th.col-num{ width:96px; }
+  }
+
+  .daybars{ display:flex; align-items:flex-end; gap:3px; height:150px; }
+  .daybars .col{ flex:1 1 0; min-width:2px; background:var(--royal); border-radius:2px 2px 0 0; opacity:.85; }
+  .daybars .col.empty{ background:var(--surface-2); opacity:1; height:2px; }
+  .day-axis{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-3); margin-top:6px; }
+
+  .tooltip{
+    position:fixed; pointer-events:none; background:var(--text-1); color:var(--page);
+    font-size:12px; line-height:1.4; border-radius:8px; padding:7px 10px; z-index:50;
+    opacity:0; transform:translate(-50%,-100%) translateY(-8px); transition: opacity .1s ease;
+    white-space:nowrap; box-shadow:0 6px 16px rgba(0,0,0,.18);
+  }
+  .tooltip.show{ opacity:1; }
+  .tooltip b{ font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 900px){
+    .grid-2, .grid-3{ grid-template-columns:1fr; }
+    .couple-band{ flex-direction:column; align-items:flex-start; }
+    .couple-band .msg{ text-align:left; }
+  }
+  @media (max-width: 520px){
+    header.top{ flex-direction:column; align-items:flex-start; }
+    .donut-wrap, .gauge-wrap{ flex-direction:column; align-items:flex-start; }
+    .person-stats{ flex-direction:column; gap:8px; }
+    .grid-2.two-col{ grid-template-columns:1fr; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <div class="eyebrow">Cartão de crédito</div>
+      <h1 id="hdr-title">Visão Geral</h1>
+      <div class="sub" id="hdr-sub">Como está nossa fatura?</div>
+    </div>
+    <div class="month-pill">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <span>Mês de referência</span>
+      <select id="mes-select"></select>
+    </div>
+  </header>
+
+  <nav class="tabs" id="page-tabs">
+    <button data-page="geral" class="active">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 11.5 12 4l8 7.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+      Visão Geral
+    </button>
+    <button data-page="casal">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 20.5s-7.5-4.6-9.6-9A5 5 0 0 1 12 6.5a5 5 0 0 1 9.6 5c-2.1 4.4-9.6 9-9.6 9z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
+      Nosso Casal
+    </button>
+    <button data-page="raiox">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.7"/><path d="M20 20l-4.8-4.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      Raio-X da Fatura
+    </button>
+    <button data-page="lancamentos">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+      Lançamentos
+    </button>
+  </nav>
+
+  <!-- ===================== PÁGINA 1 · VISÃO GERAL ===================== -->
+  <div class="page" id="page-geral">
+
+    <div class="stats" id="vg-stats"></div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Evolução da fatura</h2>
+        <div class="card-sub" id="vg-evo-sub">Total por mês.</div>
+        <svg class="linechart" id="vg-evo-chart" viewBox="0 0 560 200" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="card">
+        <h2>Gastos por categoria</h2>
+        <div class="card-sub" id="vg-cat-sub">—</div>
+        <div class="donut-wrap">
+          <div class="donut" id="vg-donut"><div class="donut-inner"><div class="v" id="vg-donut-val">—</div><div class="l">no mês</div></div></div>
+          <div class="donut-legend" id="vg-donut-legend"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="grid-2 two-col">
+        <div class="card person-card" id="vg-person-thais"></div>
+        <div class="card person-card" id="vg-person-ramon"></div>
+      </div>
+      <div class="card highlight-card">
+        <h2 style="color:var(--navy)" id="vg-maior-titulo">Maior categoria do mês</h2>
+        <div class="cat" id="vg-maior-cat">—</div>
+        <div class="card-sub" id="vg-maior-sub" style="margin-bottom:0">—</div>
+        <div class="tip" id="vg-dica">—</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================== PÁGINA 2 · NOSSO CASAL ===================== -->
+  <div class="page" id="page-casal" hidden>
+
+    <div class="grid-2 two-col">
+      <div class="card person-card" id="ns-person-thais"></div>
+      <div class="card person-card" id="ns-person-ramon"></div>
+    </div>
+
+    <div class="couple-band">
+      <div>
+        <div class="l">Total do casal</div>
+        <div class="v" id="ns-total">—</div>
+      </div>
+      <div class="badge-lead" style="color:#fff;" id="ns-lead">—</div>
+      <div class="msg" id="ns-msg">Juntos, olhando pra fatura com mais clareza.</div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Gastos por categoria (do casal)</h2>
+        <div class="card-sub" id="ns-cat-sub">—</div>
+        <div class="barlist" id="ns-cat-bars"></div>
+      </div>
+      <div class="card">
+        <h2>Categorias que mais cresceram</h2>
+        <div class="card-sub" id="ns-growth-sub">—</div>
+        <div class="growth-list" id="ns-growth-list"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Evolução dos gastos (total do casal)</h2>
+      <div class="card-sub">Individual, mês a mês.</div>
+      <svg class="linechart" id="ns-evo-chart" viewBox="0 0 560 200" preserveAspectRatio="none"></svg>
+      <div class="donut-legend" id="ns-evo-legend" style="flex-direction:row; gap:18px; margin-top:6px;"></div>
+    </div>
+
+  </div>
+
+  <!-- ===================== PÁGINA 3 · RAIO-X DA FATURA ===================== -->
+  <div class="page" id="page-raiox" hidden>
+
+    <div class="stats" id="rx-stats"></div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Gastos por dia</h2>
+        <div class="card-sub" id="rx-day-sub">—</div>
+        <div class="daybars" id="rx-daybars"></div>
+        <div class="day-axis" id="rx-day-axis"></div>
+      </div>
+      <div class="card">
+        <h2>Ranking de categorias</h2>
+        <div class="card-sub" id="rx-rank-sub">—</div>
+        <div class="barlist" id="rx-rank-bars"></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Parcelas em aberto</h2>
+        <div class="card-sub" id="rx-parc-sub">—</div>
+        <div class="table-scroll"><table class="mini">
+          <thead><tr><th>Descrição</th><th class="col-narrow">Parcelas</th><th class="col-num" style="text-align:right">Valor</th></tr></thead>
+          <tbody id="rx-parc-body"></tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <h2>Compras recorrentes</h2>
+        <div class="card-sub">Identificadas em todos os meses disponíveis.</div>
+        <div class="table-scroll"><table class="mini">
+          <thead><tr><th>Descrição</th><th class="col-freq">Frequência</th><th class="col-num" style="text-align:right">Média</th></tr></thead>
+          <tbody id="rx-rec-body"></tbody>
+        </table></div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <h2>Maiores transações</h2>
+        <div class="card-sub" id="rx-maiores-sub">—</div>
+        <div class="table-scroll"><table class="mini">
+          <thead><tr><th class="col-narrow">Data</th><th>Estabelecimento</th><th class="col-num" style="text-align:right">Valor</th></tr></thead>
+          <tbody id="rx-maiores-body"></tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <h2>Comprometimento do limite</h2>
+        <div class="card-sub" id="rx-gauge-sub">—</div>
+        <div class="gauge-wrap">
+          <div class="gauge" id="rx-gauge"><div class="gauge-inner"><div class="v" id="rx-gauge-val">—</div><div class="l">utilizado</div></div></div>
+          <div class="gauge-facts" id="rx-gauge-facts"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===================== PÁGINA 4 · LANÇAMENTOS ===================== -->
+  <div class="page" id="page-lancamentos" hidden>
+    <div class="card">
+      <h2>Lançamentos</h2>
+      <div class="card-sub" id="lc-sub">—</div>
+      <div class="lc-filters">
+        <input type="text" id="lc-busca" placeholder="Buscar estabelecimento…" />
+        <select id="lc-filtro-cat"><option value="">Categoria</option></select>
+        <select id="lc-filtro-titular">
+          <option value="">Thaís + Ramon</option>
+          <option value="Thais">Thaís</option>
+          <option value="Ramon">Ramon</option>
+        </select>
+      </div>
+      <div class="lc-chips" id="lc-chips"></div>
+      <div class="lc-resumo" id="lc-resumo">—</div>
+      <div class="table-scroll"><table class="mini">
+        <thead><tr><th class="col-narrow">Data</th><th>Estabelecimento</th><th class="col-num" style="text-align:right">Valor</th></tr></thead>
+        <tbody id="lc-body"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const DATA = {
+  "gerado_em": "2026-09-10",
+  "meses_disponiveis": [
+    "Julho/2026",
+    "Agosto/2026",
+    "Setembro/2026"
+  ],
+  "faturas": [
+    {
+      "competencia": "Julho/2026",
+      "vencimento": "08/07/2026",
+      "fechamento_proxima": "29/07/2026",
+      "total_fatura": 7638.67,
+      "compras_debitos": 8209.08,
+      "limite_compras": 37500.0,
+      "compras_utilizado": 20418.21,
+      "compras_disponivel": 17081.79,
+      "pagamento_minimo": 763.86,
+      "total_proximas_faturas_parceladas": 12779.54,
+      "total_thais": 2502.41,
+      "total_ramon": 5702.82,
+      "arquivo": "BradescoCartoes10-09-2026-19-06-42.pdf",
+      "compras_a_vista": 4501.11,
+      "compras_parceladas_no_mes": 3704.12
+    },
+    {
+      "competencia": "Agosto/2026",
+      "vencimento": "08/08/2026",
+      "fechamento_proxima": "26/08/2026",
+      "total_fatura": 9553.56,
+      "compras_debitos": 9553.56,
+      "limite_compras": 37500.0,
+      "compras_utilizado": 23873.61,
+      "compras_disponivel": 13626.39,
+      "pagamento_minimo": 955.34,
+      "total_proximas_faturas_parceladas": 14320.05,
+      "total_thais": 1942.88,
+      "total_ramon": 7606.83,
+      "arquivo": "BradescoCartoes10-09-2026-19-06-17.pdf",
+      "compras_a_vista": 5209.35,
+      "compras_parceladas_no_mes": 4340.36
+    },
+    {
+      "competencia": "Setembro/2026",
+      "vencimento": "08/09/2026",
+      "fechamento_proxima": "28/09/2026",
+      "total_fatura": 13460.26,
+      "compras_debitos": 13460.26,
+      "limite_compras": 37500.0,
+      "compras_utilizado": 26444.68,
+      "compras_disponivel": 11055.32,
+      "pagamento_minimo": 1346.02,
+      "total_proximas_faturas_parceladas": 12984.42,
+      "total_thais": 2510.61,
+      "total_ramon": 10949.65,
+      "arquivo": "Setembro_26.pdf",
+      "compras_a_vista": 9336.11,
+      "compras_parceladas_no_mes": 4124.15
+    }
+  ],
+  "categorias_completas_ordem": [
+    "Alimentação",
+    "Casa / Vestuário",
+    "Viagem / Lazer",
+    "Posto / Automóvel",
+    "Compras online",
+    "Saúde / Bem-estar",
+    "Assinaturas / Contas",
+    "Seguro",
+    "Outros",
+    "Presentes / Floricultura",
+    "Beleza / Estética",
+    "Tarifas bancárias"
+  ],
+  "categorias_totais_geral": {
+    "Alimentação": 6452.3,
+    "Casa / Vestuário": 5725.97,
+    "Viagem / Lazer": 5659.07,
+    "Posto / Automóvel": 5217.46,
+    "Compras online": 3194.64,
+    "Saúde / Bem-estar": 1555.82,
+    "Assinaturas / Contas": 1386.26,
+    "Seguro": 842.07,
+    "Outros": 725.59,
+    "Presentes / Floricultura": 295.92,
+    "Beleza / Estética": 160.1,
+    "Tarifas bancárias": 7.7
+  },
+  "chart_categories_order": [
+    "Alimentação",
+    "Casa / Vestuário",
+    "Viagem / Lazer",
+    "Posto / Automóvel",
+    "Compras online",
+    "Outros",
+    "Saúde / Bem-estar",
+    "Assinaturas / Contas"
+  ],
+  "chart_category_map": {
+    "Alimentação": "Alimentação",
+    "Casa / Vestuário": "Casa / Vestuário",
+    "Viagem / Lazer": "Viagem / Lazer",
+    "Posto / Automóvel": "Posto / Automóvel",
+    "Compras online": "Compras online",
+    "Saúde / Bem-estar": "Saúde / Bem-estar",
+    "Assinaturas / Contas": "Assinaturas / Contas",
+    "Seguro": "Outros",
+    "Outros": "Outros",
+    "Presentes / Floricultura": "Outros",
+    "Beleza / Estética": "Outros",
+    "Tarifas bancárias": "Outros"
+  },
+  "evolucao_mensal": {
+    "Julho/2026": {
+      "Alimentação": 1556.28,
+      "Casa / Vestuário": 2366.27,
+      "Viagem / Lazer": 470.69,
+      "Posto / Automóvel": 960.6,
+      "Compras online": 1169.61,
+      "Outros": 677.63,
+      "Saúde / Bem-estar": 514.24,
+      "Assinaturas / Contas": 493.76
+    },
+    "Agosto/2026": {
+      "Alimentação": 1656.32,
+      "Casa / Vestuário": 1929.97,
+      "Viagem / Lazer": 1179.7,
+      "Posto / Automóvel": 1665.46,
+      "Compras online": 1066.88,
+      "Outros": 790.97,
+      "Saúde / Bem-estar": 823.46,
+      "Assinaturas / Contas": 440.8
+    },
+    "Setembro/2026": {
+      "Alimentação": 3239.7,
+      "Casa / Vestuário": 1429.73,
+      "Viagem / Lazer": 4008.68,
+      "Posto / Automóvel": 2591.4,
+      "Compras online": 958.15,
+      "Outros": 562.78,
+      "Saúde / Bem-estar": 218.12,
+      "Assinaturas / Contas": 451.7
+    }
+  },
+  "evolucao_titular": {
+    "Julho/2026": {
+      "Thais": 2502.41,
+      "Ramon": 5702.82
+    },
+    "Agosto/2026": {
+      "Thais": 1942.88,
+      "Ramon": 7606.83
+    },
+    "Setembro/2026": {
+      "Thais": 2510.61,
+      "Ramon": 10949.65
+    }
+  },
+  "categorias_por_titular": {
+    "Thais": {
+      "Alimentação": 1907.53,
+      "Casa / Vestuário": 1633.11,
+      "Posto / Automóvel": 960.07,
+      "Saúde / Bem-estar": 719.73,
+      "Assinaturas / Contas": 530.0,
+      "Outros": 400.82,
+      "Presentes / Floricultura": 295.92,
+      "Viagem / Lazer": 212.0,
+      "Beleza / Estética": 160.1,
+      "Compras online": 136.62
+    },
+    "Ramon": {
+      "Viagem / Lazer": 5447.07,
+      "Alimentação": 4544.77,
+      "Posto / Automóvel": 4257.39,
+      "Casa / Vestuário": 4092.86,
+      "Compras online": 3058.02,
+      "Assinaturas / Contas": 856.26,
+      "Seguro": 842.07,
+      "Saúde / Bem-estar": 836.09,
+      "Outros": 324.77
+    }
+  },
+  "categorias_crescimento": [
+    {
+      "categoria": "Viagem / Lazer",
+      "atual": 4008.68,
+      "anterior": 1179.7,
+      "delta": 2828.98,
+      "delta_pct": 239.8
+    },
+    {
+      "categoria": "Alimentação",
+      "atual": 3239.7,
+      "anterior": 1656.32,
+      "delta": 1583.38,
+      "delta_pct": 95.6
+    },
+    {
+      "categoria": "Posto / Automóvel",
+      "atual": 2591.4,
+      "anterior": 1665.46,
+      "delta": 925.94,
+      "delta_pct": 55.6
+    },
+    {
+      "categoria": "Assinaturas / Contas",
+      "atual": 451.7,
+      "anterior": 440.8,
+      "delta": 10.9,
+      "delta_pct": 2.5
+    },
+    {
+      "categoria": "Compras online",
+      "atual": 958.15,
+      "anterior": 1066.88,
+      "delta": -108.73,
+      "delta_pct": -10.2
+    },
+    {
+      "categoria": "Outros",
+      "atual": 562.78,
+      "anterior": 790.97,
+      "delta": -228.19,
+      "delta_pct": -28.8
+    },
+    {
+      "categoria": "Casa / Vestuário",
+      "atual": 1429.73,
+      "anterior": 1929.97,
+      "delta": -500.24,
+      "delta_pct": -25.9
+    },
+    {
+      "categoria": "Saúde / Bem-estar",
+      "atual": 218.12,
+      "anterior": 823.46,
+      "delta": -605.34,
+      "delta_pct": -73.5
+    }
+  ],
+  "categorias_crescimento_meses": {
+    "atual": "Setembro/2026",
+    "anterior": "Agosto/2026"
+  },
+  "parcelas_em_aberto": [
+    {
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "titular": "Ramon",
+      "cidade": "Sao Paulo",
+      "parcela_atual": 2,
+      "parcela_total": 6,
+      "parcelas_restantes": 4,
+      "valor_parcela": 620.97,
+      "valor_total_compra": 3725.82,
+      "valor_restante": 2483.88,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "GRUPO CASAS BAHIA",
+      "titular": "Ramon",
+      "cidade": "Rio De Janeiro",
+      "parcela_atual": 3,
+      "parcela_total": 10,
+      "parcelas_restantes": 7,
+      "valor_parcela": 265.9,
+      "valor_total_compra": 2659.0,
+      "valor_restante": 1861.3,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "MLP*Magalu Friope",
+      "titular": "Ramon",
+      "cidade": "Serra",
+      "parcela_atual": 6,
+      "parcela_total": 10,
+      "parcelas_restantes": 4,
+      "valor_parcela": 371.87,
+      "valor_total_compra": 3718.7,
+      "valor_restante": 1487.48,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "titular": "Ramon",
+      "cidade": "Osasco",
+      "parcela_atual": 4,
+      "parcela_total": 10,
+      "parcelas_restantes": 6,
+      "valor_parcela": 239.0,
+      "valor_total_compra": 2390.0,
+      "valor_restante": 1434.0,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "Eventim *Eventim",
+      "titular": "Ramon",
+      "cidade": "Sao Paulo",
+      "parcela_atual": 1,
+      "parcela_total": 6,
+      "parcelas_restantes": 5,
+      "valor_parcela": 265.0,
+      "valor_total_compra": 1590.0,
+      "valor_restante": 1325.0,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "NOBRE ARTE UTENSILIOS",
+      "titular": "Ramon",
+      "cidade": "Campinas",
+      "parcela_atual": 2,
+      "parcela_total": 10,
+      "parcelas_restantes": 8,
+      "valor_parcela": 125.0,
+      "valor_total_compra": 1250.0,
+      "valor_restante": 1000.0,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "GLOBO*Combo",
+      "titular": "Ramon",
+      "cidade": "Rio De Janeiro",
+      "parcela_atual": 1,
+      "parcela_total": 12,
+      "parcelas_restantes": 11,
+      "valor_parcela": 59.9,
+      "valor_total_compra": 718.8,
+      "valor_restante": 658.9,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "AIRBNB * HMHMC35",
+      "titular": "Ramon",
+      "cidade": "Sao Paulo",
+      "parcela_atual": 3,
+      "parcela_total": 6,
+      "parcelas_restantes": 3,
+      "valor_parcela": 214.73,
+      "valor_total_compra": 1288.38,
+      "valor_restante": 644.19,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "MLP*Magalu Pneu B",
+      "titular": "Ramon",
+      "cidade": "Uberlandia",
+      "parcela_atual": 8,
+      "parcela_total": 10,
+      "parcelas_restantes": 2,
+      "valor_parcela": 221.82,
+      "valor_total_compra": 2218.2,
+      "valor_restante": 443.64,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "AUTO TECH",
+      "titular": "Ramon",
+      "cidade": "Coronel Fabriciano",
+      "parcela_atual": 3,
+      "parcela_total": 6,
+      "parcelas_restantes": 3,
+      "valor_parcela": 141.66,
+      "valor_total_compra": 849.96,
+      "valor_restante": 424.98,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "CLINICA DAVI REZENDE",
+      "titular": "Thais",
+      "cidade": "Belo Horizonte",
+      "parcela_atual": 4,
+      "parcela_total": 10,
+      "parcelas_restantes": 6,
+      "valor_parcela": 60.5,
+      "valor_total_compra": 605.0,
+      "valor_restante": 363.0,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "CB TINTAS",
+      "titular": "Ramon",
+      "cidade": "Timoteo",
+      "parcela_atual": 5,
+      "parcela_total": 6,
+      "parcelas_restantes": 1,
+      "valor_parcela": 272.61,
+      "valor_total_compra": 1635.66,
+      "valor_restante": 272.61,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "VK CALCADOS",
+      "titular": "Ramon",
+      "cidade": "Ipatinga",
+      "parcela_atual": 1,
+      "parcela_total": 2,
+      "parcelas_restantes": 1,
+      "valor_parcela": 239.99,
+      "valor_total_compra": 479.98,
+      "valor_restante": 239.99,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "MARIA CHIC",
+      "titular": "Thais",
+      "cidade": "Coronel Fabriciano",
+      "parcela_atual": 2,
+      "parcela_total": 4,
+      "parcelas_restantes": 2,
+      "valor_parcela": 55.42,
+      "valor_total_compra": 221.68,
+      "valor_restante": 110.84,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "ELETRO MOVEIS ACESIT",
+      "titular": "Ramon",
+      "cidade": "Timoteo",
+      "parcela_atual": 4,
+      "parcela_total": 5,
+      "parcelas_restantes": 1,
+      "valor_parcela": 109.8,
+      "valor_total_compra": 549.0,
+      "valor_restante": 109.8,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "NAYARA TORRES QUINTAL",
+      "titular": "Thais",
+      "cidade": "Coronel Fabriciano",
+      "parcela_atual": 2,
+      "parcela_total": 3,
+      "parcelas_restantes": 1,
+      "valor_parcela": 67.66,
+      "valor_total_compra": 202.98,
+      "valor_restante": 67.66,
+      "competencia_referencia": "Setembro/2026"
+    },
+    {
+      "estabelecimento": "SHOPEE *Armazenamento",
+      "titular": "Ramon",
+      "cidade": "Guarulhos",
+      "parcela_atual": 5,
+      "parcela_total": 6,
+      "parcelas_restantes": 1,
+      "valor_parcela": 57.15,
+      "valor_total_compra": 342.9,
+      "valor_restante": 57.15,
+      "competencia_referencia": "Setembro/2026"
+    }
+  ],
+  "compras_recorrentes": [
+    {
+      "estabelecimento": "TOKIO MARINE*AUTO",
+      "categoria": "Seguro",
+      "frequencia": "Mensal",
+      "valor_medio": 280.69
+    },
+    {
+      "estabelecimento": "ALTA PERFORMANCE",
+      "categoria": "Saúde / Bem-estar",
+      "frequencia": "Mensal",
+      "valor_medio": 94.9
+    },
+    {
+      "estabelecimento": "CONTA VIVO",
+      "categoria": "Assinaturas / Contas",
+      "frequencia": "Mensal",
+      "valor_medio": 82.11
+    },
+    {
+      "estabelecimento": "CASA DE CARNES PRIMOS",
+      "categoria": "Alimentação",
+      "frequencia": "Mensal",
+      "valor_medio": 74.48
+    },
+    {
+      "estabelecimento": "HAMBURGUEIRO",
+      "categoria": "Alimentação",
+      "frequencia": "Mensal",
+      "valor_medio": 41.29
+    },
+    {
+      "estabelecimento": "CAPPTA *QUENIA APARECI",
+      "categoria": "Outros",
+      "frequencia": "Mensal",
+      "valor_medio": 36.0
+    },
+    {
+      "estabelecimento": "CONSUL",
+      "categoria": "Posto / Automóvel",
+      "frequencia": "Mensal",
+      "valor_medio": 23.63
+    },
+    {
+      "estabelecimento": "AUTO POSTO AMERICA LTD",
+      "categoria": "Posto / Automóvel",
+      "frequencia": "Mensal",
+      "valor_medio": 19.23
+    },
+    {
+      "estabelecimento": "JOTTA GRILL BEER",
+      "categoria": "Alimentação",
+      "frequencia": "Mensal",
+      "valor_medio": 13.17
+    }
+  ],
+  "lancamentos": [
+    {
+      "competencia": "Julho/2026",
+      "data": "31/01",
+      "titular": "Thais",
+      "estabelecimento": "RO STORE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 34.8,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 5,
+      "parcela_total": 5
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "04/04",
+      "titular": "Thais",
+      "estabelecimento": "CARMO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 73.3,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "04/04",
+      "titular": "Thais",
+      "estabelecimento": "SOUTO SIMOES PERFUMARIA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 48.0,
+      "categoria": "Beleza / Estética",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "09/05",
+      "titular": "Thais",
+      "estabelecimento": "ANACAPRI",
+      "cidade": "Ipatinga",
+      "valor": 99.95,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "21/05",
+      "titular": "Thais",
+      "estabelecimento": "CLINICA DAVI REZENDE",
+      "cidade": "Belo Horizonte",
+      "valor": 60.5,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "23/05",
+      "titular": "Thais",
+      "estabelecimento": "CustodiaSintia",
+      "cidade": "Coronel Fabriciano",
+      "valor": 32.86,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "23/05",
+      "titular": "Thais",
+      "estabelecimento": "MARIA CHIC",
+      "cidade": "Coronel Fabriciano",
+      "valor": 124.6,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "26/05",
+      "titular": "Thais",
+      "estabelecimento": "JOTTA GRILL BEER",
+      "cidade": "Timoteo",
+      "valor": 10.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "27/05",
+      "titular": "Thais",
+      "estabelecimento": "AUTO POSTO AMERICA LTD",
+      "cidade": "Coronel Fabriciano",
+      "valor": 29.97,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "29/05",
+      "titular": "Thais",
+      "estabelecimento": "ERICA MAGALHAES",
+      "cidade": "Coronel Fabriciano",
+      "valor": 94.1,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Thais",
+      "estabelecimento": "ALTA PERFORMANCE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 94.9,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Thais",
+      "estabelecimento": "TITAN",
+      "cidade": "Coronel Fabriciano",
+      "valor": 105.3,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Thais",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 51.54,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Thais",
+      "estabelecimento": "MARINA PRESENTES",
+      "cidade": "Coronel Fabriciano",
+      "valor": 49.99,
+      "categoria": "Presentes / Floricultura",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Thais",
+      "estabelecimento": "CASA DE CARNES PRIMOS",
+      "cidade": "Timoteo",
+      "valor": 41.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Thais",
+      "estabelecimento": "JARDINS DOS ARRUDAS",
+      "cidade": "Coronel Fabriciano",
+      "valor": 41.0,
+      "categoria": "Presentes / Floricultura",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Thais",
+      "estabelecimento": "BELLA BOUTIK",
+      "cidade": "Coronel Fabriciano",
+      "valor": 132.5,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "06/06",
+      "titular": "Thais",
+      "estabelecimento": "AndreiaEstilos",
+      "cidade": "Coronel Fabriciano",
+      "valor": 62.1,
+      "categoria": "Beleza / Estética",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "06/06",
+      "titular": "Thais",
+      "estabelecimento": "RESTAURANTE SABOR DA GENTE",
+      "cidade": "Timoteo",
+      "valor": 41.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "06/06",
+      "titular": "Thais",
+      "estabelecimento": "POSTO CENTRAL 09",
+      "cidade": "Timoteo",
+      "valor": 150.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "08/06",
+      "titular": "Thais",
+      "estabelecimento": "PANIFICADORA SANTA HEL",
+      "cidade": "Timoteo",
+      "valor": 31.76,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "08/06",
+      "titular": "Thais",
+      "estabelecimento": "SAN DIEGO IPATINGA",
+      "cidade": "Ipatinga",
+      "valor": 3.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "08/06",
+      "titular": "Thais",
+      "estabelecimento": "MASTER GOURMET IPATINGA",
+      "cidade": "Ipatinga",
+      "valor": 82.4,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "09/06",
+      "titular": "Thais",
+      "estabelecimento": "TIM LANCHES",
+      "cidade": "Sao Goncalo",
+      "valor": 4.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "11/06",
+      "titular": "Thais",
+      "estabelecimento": "RESTAURANTE BEIJAFLOR",
+      "cidade": "Belo Horizonte",
+      "valor": 5.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "13/06",
+      "titular": "Thais",
+      "estabelecimento": "PADARIA MACEDO LIMITADA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 10.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "15/06",
+      "titular": "Thais",
+      "estabelecimento": "CANTINA DA SERRA",
+      "cidade": "Nova Era",
+      "valor": 44.9,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "16/06",
+      "titular": "Thais",
+      "estabelecimento": "REI DO CUPIM",
+      "cidade": "Camacari",
+      "valor": 17.1,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "17/06",
+      "titular": "Thais",
+      "estabelecimento": "WPS*J J Restaurante",
+      "cidade": "Camacari",
+      "valor": 16.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "18/06",
+      "titular": "Thais",
+      "estabelecimento": "CONTA VIVO",
+      "cidade": "Sao Paulo",
+      "valor": 80.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "19/06",
+      "titular": "Thais",
+      "estabelecimento": "DPSSA SALVADOR",
+      "cidade": "Salvador",
+      "valor": 67.9,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "19/06",
+      "titular": "Thais",
+      "estabelecimento": "TIA ELIANA",
+      "cidade": "Timoteo",
+      "valor": 50.39,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "19/06",
+      "titular": "Thais",
+      "estabelecimento": "SSP DFA RESTAURANTES B",
+      "cidade": "Salvador",
+      "valor": 26.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Thais",
+      "estabelecimento": "CAFE GOUMERT",
+      "cidade": "Coronel Fabriciano",
+      "valor": 23.8,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Thais",
+      "estabelecimento": "NAYARA TORRES QUINTAO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 40.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Thais",
+      "estabelecimento": "COM PASSO DO VALE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 189.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Thais",
+      "estabelecimento": "Ticketmais",
+      "cidade": "Tubarao",
+      "valor": 19.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Thais",
+      "estabelecimento": "Ticketmais",
+      "cidade": "Tubarao",
+      "valor": 13.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Thais",
+      "estabelecimento": "DROGARIA OLIVEIRA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 71.75,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "22/06",
+      "titular": "Thais",
+      "estabelecimento": "LUCIENE DUELI MAKEUP",
+      "cidade": "Timoteo",
+      "valor": 30.0,
+      "categoria": "Beleza / Estética",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "22/06",
+      "titular": "Thais",
+      "estabelecimento": "Anthropic *Claude Sub",
+      "cidade": "Online",
+      "valor": 110.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "23/06",
+      "titular": "Thais",
+      "estabelecimento": "THAIS DE ALVARENGA MAR",
+      "cidade": "Coronel Fabriciano",
+      "valor": 190.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "03/09",
+      "titular": "Ramon",
+      "estabelecimento": "LIVELO S.A.*Clube",
+      "cidade": "Santana De Parnaiba",
+      "valor": 24.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 10,
+      "parcela_total": 12
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "06/11",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO CASAS BAHIA",
+      "cidade": "Rio De Janeiro",
+      "valor": 63.98,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 8,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "22/12",
+      "titular": "Ramon",
+      "estabelecimento": "ChilliBeans",
+      "cidade": "Ipatinga",
+      "valor": 68.78,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 7,
+      "parcela_total": 7
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "25/12",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Pneu B",
+      "cidade": "Uberlandia",
+      "valor": 221.82,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "29/01",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*EXTREME",
+      "cidade": "Feira De Santana",
+      "valor": 48.49,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 5,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "25/02",
+      "titular": "Ramon",
+      "estabelecimento": "SLS HOTEL E RESTAURANTE",
+      "cidade": "Campos Do Jordao",
+      "valor": 255.96,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "04/03",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Friope",
+      "cidade": "Serra",
+      "valor": 371.87,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "19/03",
+      "titular": "Ramon",
+      "estabelecimento": "ELETROFASE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 55.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 4
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "28/03",
+      "titular": "Ramon",
+      "estabelecimento": "CB TINTAS",
+      "cidade": "Timoteo",
+      "valor": 272.61,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/04",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *Armazenamento",
+      "cidade": "Guarulhos",
+      "valor": 57.15,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/04",
+      "titular": "Ramon",
+      "estabelecimento": "SharkSolutions",
+      "cidade": "Campo Bom",
+      "valor": 93.33,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "02/05",
+      "titular": "Ramon",
+      "estabelecimento": "FERMACO",
+      "cidade": "Timoteo",
+      "valor": 68.45,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "09/05",
+      "titular": "Ramon",
+      "estabelecimento": "ELETRO MOVEIS ACESIT",
+      "cidade": "Timoteo",
+      "valor": 109.8,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 5
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "16/05",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "cidade": "Osasco",
+      "valor": 239.0,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "26/05",
+      "titular": "Ramon",
+      "estabelecimento": "CONTA VIVO",
+      "cidade": "Sao Paulo",
+      "valor": 82.63,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "27/05",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CENTRAL 05",
+      "cidade": "Coronel Fabriciano",
+      "valor": 150.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "28/05",
+      "titular": "Ramon",
+      "estabelecimento": "MOVFIT FABRICIANO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 250.0,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "29/05",
+      "titular": "Ramon",
+      "estabelecimento": "MULTICEL CELULAR",
+      "cidade": "Ipatinga",
+      "valor": 99.8,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "29/05",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM E BEER",
+      "cidade": "Ipatinga",
+      "valor": 36.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "29/05",
+      "titular": "Ramon",
+      "estabelecimento": "PADARIA BOM RETIRO",
+      "cidade": "Ipatinga",
+      "valor": 17.55,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "30/05",
+      "titular": "Ramon",
+      "estabelecimento": "BRUTTUS BURGUER",
+      "cidade": "Timoteo",
+      "valor": 71.99,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *SLGVARIEDADESS",
+      "cidade": "Sao Paulo",
+      "valor": 45.98,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPPING DO VALE",
+      "cidade": "Ipatinga",
+      "valor": 6.5,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO CASAS BAHIA",
+      "cidade": "Rio De Janeiro",
+      "valor": 265.95,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "RIACHUELO 272",
+      "cidade": "Ipatinga",
+      "valor": 149.99,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "01/06",
+      "titular": "Ramon",
+      "estabelecimento": "TOKIO MARINE*AUTO",
+      "cidade": "Sao Paulo",
+      "valor": 280.69,
+      "categoria": "Seguro",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "03/06",
+      "titular": "Ramon",
+      "estabelecimento": "JIM.COM 52483555 ISADORA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 27.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "03/06",
+      "titular": "Ramon",
+      "estabelecimento": "JIM.COM 52483555 ISADORA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 16.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "03/06",
+      "titular": "Ramon",
+      "estabelecimento": "JIM.COM 52483555 ISADORA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 16.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "03/06",
+      "titular": "Ramon",
+      "estabelecimento": "JIM.COM 52483555 ISADORA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 16.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "04/06",
+      "titular": "Ramon",
+      "estabelecimento": "ALIEXPRESS",
+      "cidade": "Sao Paulo",
+      "valor": 163.4,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *MMPERSONALSTOR",
+      "cidade": "Itu",
+      "valor": 21.9,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "05/06",
+      "titular": "Ramon",
+      "estabelecimento": "AUTO TECH",
+      "cidade": "Coronel Fabriciano",
+      "valor": 141.7,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "06/06",
+      "titular": "Ramon",
+      "estabelecimento": "NETFLIX.COM",
+      "cidade": "Sao Paulo",
+      "valor": 20.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "09/06",
+      "titular": "Ramon",
+      "estabelecimento": "MARCELLUS LANCHES",
+      "cidade": "Timoteo",
+      "valor": 35.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "10/06",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM E BEER",
+      "cidade": "Ipatinga",
+      "valor": 33.76,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "10/06",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 35.6,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "11/06",
+      "titular": "Ramon",
+      "estabelecimento": "CAPPTA *QUENIA APARECI",
+      "cidade": "Coronel Fabriciano",
+      "valor": 47.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "12/06",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 19.95,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "12/06",
+      "titular": "Ramon",
+      "estabelecimento": "DONA XICA",
+      "cidade": "Timoteo",
+      "valor": 79.4,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "13/06",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CAMPESTRE",
+      "cidade": "Timoteo",
+      "valor": 200.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "13/06",
+      "titular": "Ramon",
+      "estabelecimento": "FARMACIA INDIANA 129 C",
+      "cidade": "Itaobim",
+      "valor": 37.09,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "13/06",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO BH",
+      "cidade": "Coronel Fabriciano",
+      "valor": 100.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "13/06",
+      "titular": "Ramon",
+      "estabelecimento": "CASA DE CARNES PRIMOS",
+      "cidade": "Timoteo",
+      "valor": 78.95,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "13/06",
+      "titular": "Ramon",
+      "estabelecimento": "PATI ALUGUEL",
+      "cidade": "Ipatinga",
+      "valor": 280.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "15/06",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 53.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "15/06",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 18.88,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "16/06",
+      "titular": "Ramon",
+      "estabelecimento": "POLLIUS IGUACU",
+      "cidade": "Ipatinga",
+      "valor": 23.81,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "17/06",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 22.64,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "17/06",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 6.48,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "17/06",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 40.62,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "17/06",
+      "titular": "Ramon",
+      "estabelecimento": "RONALDO SANTIAGO FONS",
+      "cidade": "Timoteo",
+      "valor": 15.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "17/06",
+      "titular": "Ramon",
+      "estabelecimento": "QUALITY GRILL",
+      "cidade": "Ipatinga",
+      "valor": 144.04,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "17/06",
+      "titular": "Ramon",
+      "estabelecimento": "PADARIA MERCAPAO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 11.75,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "18/06",
+      "titular": "Ramon",
+      "estabelecimento": "CAPPTA *QUENIA APARECI",
+      "cidade": "Coronel Fabriciano",
+      "valor": 25.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "19/06",
+      "titular": "Ramon",
+      "estabelecimento": "BUTIQUIM BAR",
+      "cidade": "Ipatinga",
+      "valor": 160.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Ramon",
+      "estabelecimento": "Ticketmais",
+      "cidade": "Tubarao",
+      "valor": 17.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Ramon",
+      "estabelecimento": "Ticketmais",
+      "cidade": "Tubarao",
+      "valor": 20.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Ramon",
+      "estabelecimento": "Ticketmais",
+      "cidade": "Tubarao",
+      "valor": 13.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "20/06",
+      "titular": "Ramon",
+      "estabelecimento": "JIM.COM SOLUCAO FERRAMENT",
+      "cidade": "Coronel Fabriciano",
+      "valor": 39.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "21/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMHMC35",
+      "cidade": "Sao Paulo",
+      "valor": 214.73,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "23/06",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CENTRAL 05",
+      "cidade": "Coronel Fabriciano",
+      "valor": 100.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Julho/2026",
+      "data": "26/06",
+      "titular": "Conta",
+      "estabelecimento": "IOF S/ TRANS INTER REAIS",
+      "cidade": "-",
+      "valor": 3.85,
+      "categoria": "Tarifas bancárias",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "21/05",
+      "titular": "Thais",
+      "estabelecimento": "CLINICA DAVI REZENDE",
+      "cidade": "Belo Horizonte",
+      "valor": 60.5,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "23/05",
+      "titular": "Thais",
+      "estabelecimento": "CustodiaSintia",
+      "cidade": "Coronel Fabriciano",
+      "valor": 32.86,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "23/05",
+      "titular": "Thais",
+      "estabelecimento": "MARIA CHIC",
+      "cidade": "Coronel Fabriciano",
+      "valor": 124.6,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "29/05",
+      "titular": "Thais",
+      "estabelecimento": "ERICA MAGALHAES",
+      "cidade": "Coronel Fabriciano",
+      "valor": 94.1,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "05/06",
+      "titular": "Thais",
+      "estabelecimento": "BELLA BOUTIK",
+      "cidade": "Coronel Fabriciano",
+      "valor": 132.5,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/06",
+      "titular": "Thais",
+      "estabelecimento": "MARIA CHIC",
+      "cidade": "Coronel Fabriciano",
+      "valor": 55.44,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 4
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "02/07",
+      "titular": "Thais",
+      "estabelecimento": "REST. RODOVIA 108",
+      "cidade": "Mariana",
+      "valor": 14.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "03/07",
+      "titular": "Thais",
+      "estabelecimento": "SHOPEE *LuxClutch",
+      "cidade": "Sao Bernardo",
+      "valor": 68.31,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "04/07",
+      "titular": "Thais",
+      "estabelecimento": "MARINA PRESENTES",
+      "cidade": "Coronel Fabriciano",
+      "valor": 50.0,
+      "categoria": "Presentes / Floricultura",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "04/07",
+      "titular": "Thais",
+      "estabelecimento": "FLORALIA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 46.0,
+      "categoria": "Presentes / Floricultura",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "05/07",
+      "titular": "Thais",
+      "estabelecimento": "ALTA PERFORMANCE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 94.9,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "07/07",
+      "titular": "Thais",
+      "estabelecimento": "STAFE BANK",
+      "cidade": "Camaqua",
+      "valor": 54.86,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "08/07",
+      "titular": "Thais",
+      "estabelecimento": "Ticketmais",
+      "cidade": "Tubarao",
+      "valor": 36.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "09/07",
+      "titular": "Thais",
+      "estabelecimento": "CAPPTA *QUENIA APARECI",
+      "cidade": "Coronel Fabriciano",
+      "valor": 23.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "10/07",
+      "titular": "Thais",
+      "estabelecimento": "AUTO POSTO AMERICA LTD",
+      "cidade": "Coronel Fabriciano",
+      "valor": 5.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "14/07",
+      "titular": "Thais",
+      "estabelecimento": "JOTTA GRILL BEER",
+      "cidade": "Timoteo",
+      "valor": 10.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "16/07",
+      "titular": "Thais",
+      "estabelecimento": "AUTO POSTO AMERICA LTD",
+      "cidade": "Coronel Fabriciano",
+      "valor": 36.97,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "16/07",
+      "titular": "Thais",
+      "estabelecimento": "Ipatinga",
+      "cidade": "Ipatinga",
+      "valor": 53.9,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "16/07",
+      "titular": "Thais",
+      "estabelecimento": "RIACHUELO 272",
+      "cidade": "Ipatinga",
+      "valor": 29.97,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "17/07",
+      "titular": "Thais",
+      "estabelecimento": "CONTA VIVO",
+      "cidade": "Sao Paulo",
+      "valor": 81.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "18/07",
+      "titular": "Thais",
+      "estabelecimento": "MASSUME SUSHI PREMIUM",
+      "cidade": "Ipatinga",
+      "valor": 54.06,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "18/07",
+      "titular": "Thais",
+      "estabelecimento": "ASSOCIACAO IDEHM",
+      "cidade": "Ipatinga",
+      "valor": 12.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "18/07",
+      "titular": "Thais",
+      "estabelecimento": "BODYPIERCING",
+      "cidade": "Timoteo",
+      "valor": 20.0,
+      "categoria": "Beleza / Estética",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "18/07",
+      "titular": "Thais",
+      "estabelecimento": "44 LOJA SHOPPING VAL",
+      "cidade": "Ipatinga",
+      "valor": 76.05,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "19/07",
+      "titular": "Thais",
+      "estabelecimento": "SHEIN *SHEIN.COM",
+      "cidade": "Vila Olimpia",
+      "valor": 21.52,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "19/07",
+      "titular": "Thais",
+      "estabelecimento": "SHEIN *SHEIN.COM",
+      "cidade": "Vila Olimpia",
+      "valor": 27.2,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "19/07",
+      "titular": "Thais",
+      "estabelecimento": "MariaGomesAraujoS",
+      "cidade": "Timoteo",
+      "valor": 41.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "22/07",
+      "titular": "Thais",
+      "estabelecimento": "Anthropic *Claude Sub",
+      "cidade": "Online",
+      "valor": 110.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "25/07",
+      "titular": "Thais",
+      "estabelecimento": "CAFE GOUMERT",
+      "cidade": "Coronel Fabriciano",
+      "valor": 6.5,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "25/07",
+      "titular": "Thais",
+      "estabelecimento": "NAYARA TORRES QUINTA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 67.68,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "26/07",
+      "titular": "Thais",
+      "estabelecimento": "STAFE BANK",
+      "cidade": "Teresina",
+      "valor": 103.9,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "26/07",
+      "titular": "Thais",
+      "estabelecimento": "PECADO DA CARNE",
+      "cidade": "Ipatinga",
+      "valor": 49.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Thais",
+      "estabelecimento": "FARMACIA INDIANA 142 O",
+      "cidade": "Teofilo Otoni",
+      "valor": 137.06,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Thais",
+      "estabelecimento": "SABOR DE MINAS RESTAUR",
+      "cidade": "Belo Horizonte",
+      "valor": 4.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Thais",
+      "estabelecimento": "VELOE*THAIS CRIST",
+      "cidade": "Barueri",
+      "valor": 50.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "28/07",
+      "titular": "Thais",
+      "estabelecimento": "LANCHONETE PANTANAL",
+      "cidade": "Coronel Fabriciano",
+      "valor": 59.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "03/09",
+      "titular": "Ramon",
+      "estabelecimento": "LIVELO S.A.*Clube",
+      "cidade": "Santana De Parnaiba",
+      "valor": 24.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 11,
+      "parcela_total": 12
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "06/11",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO CASAS BAHIA",
+      "cidade": "Rio De Janeiro",
+      "valor": 63.98,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 9,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "25/12",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Pneu B",
+      "cidade": "Uberlandia",
+      "valor": 221.82,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 7,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "29/01",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*EXTREME",
+      "cidade": "Feira De Santana",
+      "valor": 48.49,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "25/02",
+      "titular": "Ramon",
+      "estabelecimento": "SLS HOTEL E RESTAURANTE",
+      "cidade": "Campos Do Jordao",
+      "valor": 255.96,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 5,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "04/03",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Friope",
+      "cidade": "Serra",
+      "valor": 371.87,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 5,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "28/03",
+      "titular": "Ramon",
+      "estabelecimento": "CB TINTAS",
+      "cidade": "Timoteo",
+      "valor": 272.61,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "20/04",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *Armazenamento",
+      "cidade": "Guarulhos",
+      "valor": 57.15,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "02/05",
+      "titular": "Ramon",
+      "estabelecimento": "FERMACO",
+      "cidade": "Timoteo",
+      "valor": 68.45,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "09/05",
+      "titular": "Ramon",
+      "estabelecimento": "ELETRO MOVEIS ACESIT",
+      "cidade": "Timoteo",
+      "valor": 109.8,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 5
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "16/05",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "cidade": "Osasco",
+      "valor": 239.0,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO CASAS BAHIA",
+      "cidade": "Rio De Janeiro",
+      "valor": 265.9,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "RIACHUELO 272",
+      "cidade": "Ipatinga",
+      "valor": 149.99,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "05/06",
+      "titular": "Ramon",
+      "estabelecimento": "AUTO TECH",
+      "cidade": "Coronel Fabriciano",
+      "valor": 141.66,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "13/06",
+      "titular": "Ramon",
+      "estabelecimento": "PATI ALUGUEL",
+      "cidade": "Ipatinga",
+      "valor": 280.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "21/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMHMC35",
+      "cidade": "Sao Paulo",
+      "valor": 214.73,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "26/06",
+      "titular": "Ramon",
+      "estabelecimento": "TEMPEROU CARIRU",
+      "cidade": "Ipatinga",
+      "valor": 51.4,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/06",
+      "titular": "Ramon",
+      "estabelecimento": "MOVFIT FABRICIANO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 250.0,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/06",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO BH",
+      "cidade": "Coronel Fabriciano",
+      "valor": 150.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "28/06",
+      "titular": "Ramon",
+      "estabelecimento": "RESTAURANTE DEL REY LTDA",
+      "cidade": "Jaguaracu",
+      "valor": 220.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "29/06",
+      "titular": "Ramon",
+      "estabelecimento": "CONTA VIVO",
+      "cidade": "Sao Paulo",
+      "valor": 81.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "29/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "cidade": "Sao Paulo",
+      "valor": 621.01,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "30/06",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CENTRAL 05",
+      "cidade": "Coronel Fabriciano",
+      "valor": 150.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "30/06",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 47.68,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "01/07",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 27.32,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "01/07",
+      "titular": "Ramon",
+      "estabelecimento": "TOKIO MARINE*AUTO",
+      "cidade": "Sao Paulo",
+      "valor": 280.69,
+      "categoria": "Seguro",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "01/07",
+      "titular": "Ramon",
+      "estabelecimento": "MARIETA SALGADOS",
+      "cidade": "Ipatinga",
+      "valor": 9.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "01/07",
+      "titular": "Ramon",
+      "estabelecimento": "STAFE BANK",
+      "cidade": "Camaqua",
+      "valor": 83.77,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "01/07",
+      "titular": "Ramon",
+      "estabelecimento": "HospitalMarcio",
+      "cidade": "Ipatinga",
+      "valor": 14.0,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "01/07",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 39.84,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "03/07",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 15.47,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "03/07",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 47.64,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "03/07",
+      "titular": "Ramon",
+      "estabelecimento": "PADARIA BOM RETIRO",
+      "cidade": "Ipatinga",
+      "valor": 17.55,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "05/07",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 52.18,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "06/07",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CENTRAL 05",
+      "cidade": "Coronel Fabriciano",
+      "valor": 150.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "06/07",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 9.15,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "06/07",
+      "titular": "Ramon",
+      "estabelecimento": "NETFLIX ENTRETENIMENTO",
+      "cidade": "Barueri",
+      "valor": 20.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "07/07",
+      "titular": "Ramon",
+      "estabelecimento": "PADARIA MERCAPAO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 25.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "08/07",
+      "titular": "Ramon",
+      "estabelecimento": "DL*UberRides",
+      "cidade": "Sao Paulo",
+      "valor": 44.94,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "08/07",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *annaloja",
+      "cidade": "Sao Paulo",
+      "valor": 12.93,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "08/07",
+      "titular": "Ramon",
+      "estabelecimento": "HospitalMarcio",
+      "cidade": "Ipatinga",
+      "valor": 17.0,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "08/07",
+      "titular": "Ramon",
+      "estabelecimento": "SfFichasECashless",
+      "cidade": "Araras",
+      "valor": 36.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "08/07",
+      "titular": "Ramon",
+      "estabelecimento": "SfFichasECashless",
+      "cidade": "Araras",
+      "valor": 40.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "08/07",
+      "titular": "Ramon",
+      "estabelecimento": "NOBRE ARTE UTEN",
+      "cidade": "Campinas",
+      "valor": 125.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "10/07",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 19.95,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "10/07",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 27.17,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "10/07",
+      "titular": "Ramon",
+      "estabelecimento": "DONA XICA",
+      "cidade": "Timoteo",
+      "valor": 77.17,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "11/07",
+      "titular": "Ramon",
+      "estabelecimento": "P12 BEACH BAR E RESTAU",
+      "cidade": "Coronel Fabriciano",
+      "valor": 189.2,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "11/07",
+      "titular": "Ramon",
+      "estabelecimento": "PREMIALY",
+      "cidade": "Timoteo",
+      "valor": 22.02,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "11/07",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *ProdutosGalla",
+      "cidade": "Sao Paulo",
+      "valor": 47.31,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "11/07",
+      "titular": "Ramon",
+      "estabelecimento": "GleidsonMorais",
+      "cidade": "Timoteo",
+      "valor": 80.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "12/07",
+      "titular": "Ramon",
+      "estabelecimento": "MAGIC BURGUER",
+      "cidade": "Coronel Fabriciano",
+      "valor": 126.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "14/07",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 29.16,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "15/07",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 12.48,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "15/07",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CENTRAL 05",
+      "cidade": "Coronel Fabriciano",
+      "valor": 200.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "15/07",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 39.68,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "16/07",
+      "titular": "Ramon",
+      "estabelecimento": "CASA DE CARNES PRIMOS",
+      "cidade": "Timoteo",
+      "valor": 79.8,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "17/07",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 31.58,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "18/07",
+      "titular": "Ramon",
+      "estabelecimento": "CASA DO PAO",
+      "cidade": "Timoteo",
+      "valor": 7.23,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "18/07",
+      "titular": "Ramon",
+      "estabelecimento": "KINCAS PIZZARIA",
+      "cidade": "Timoteo",
+      "valor": 79.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "18/07",
+      "titular": "Ramon",
+      "estabelecimento": "ANGRA RESTAURANTE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 41.19,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "19/07",
+      "titular": "Ramon",
+      "estabelecimento": "REDE RIVA 6 POSTO DE",
+      "cidade": "Timoteo",
+      "valor": 100.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "22/07",
+      "titular": "Ramon",
+      "estabelecimento": "SODEXO",
+      "cidade": "Ipatinga",
+      "valor": 12.05,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "22/07",
+      "titular": "Ramon",
+      "estabelecimento": "DALDIRLEY ELVIO CONRADO A",
+      "cidade": "Coronel Fabriciano",
+      "valor": 30.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "24/07",
+      "titular": "Ramon",
+      "estabelecimento": "MARCELLUS LANCHES",
+      "cidade": "Timoteo",
+      "valor": 35.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "24/07",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 36.48,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "26/07",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO BH",
+      "cidade": "Coronel Fabriciano",
+      "valor": 237.87,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Ramon",
+      "estabelecimento": "CONTA VIVO",
+      "cidade": "Sao Paulo",
+      "valor": 87.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Ramon",
+      "estabelecimento": "SEIS PISTAS PARKING",
+      "cidade": "Nova Lima",
+      "valor": 8.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Ramon",
+      "estabelecimento": "MOVFIT FABRICIANO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 250.0,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Ramon",
+      "estabelecimento": "PADARIA MERCAPAO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 8.25,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Ramon",
+      "estabelecimento": "PADARIA MERCAPAO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 17.8,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "27/07",
+      "titular": "Ramon",
+      "estabelecimento": "BELLEU S LANCHES",
+      "cidade": "Sao Goncalo",
+      "valor": 68.3,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "28/07",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CENTRAL 05",
+      "cidade": "Coronel Fabriciano",
+      "valor": 150.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "28/07",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 31.36,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Agosto/2026",
+      "data": "29/07",
+      "titular": "Conta",
+      "estabelecimento": "IOF S/ TRANS INTER REAIS",
+      "cidade": "-",
+      "valor": 3.85,
+      "categoria": "Tarifas bancárias",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "21/05",
+      "titular": "Thais",
+      "estabelecimento": "CLINICA DAVI REZENDE",
+      "cidade": "Belo Horizonte",
+      "valor": 60.5,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "27/06",
+      "titular": "Thais",
+      "estabelecimento": "MARIA CHIC",
+      "cidade": "Coronel Fabriciano",
+      "valor": 55.42,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 4
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "03/07",
+      "titular": "Thais",
+      "estabelecimento": "SHOPEE *LuxClutch",
+      "cidade": "Sao Bernardo",
+      "valor": 68.31,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "04/07",
+      "titular": "Thais",
+      "estabelecimento": "FLORALIA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 46.0,
+      "categoria": "Presentes / Floricultura",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "04/07",
+      "titular": "Thais",
+      "estabelecimento": "MARINA PRESENTES",
+      "cidade": "Coronel Fabriciano",
+      "valor": 49.99,
+      "categoria": "Presentes / Floricultura",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "18/07",
+      "titular": "Thais",
+      "estabelecimento": "44 LOJA SHOPPING VAL",
+      "cidade": "Ipatinga",
+      "valor": 76.04,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "25/07",
+      "titular": "Thais",
+      "estabelecimento": "NAYARA TORRES QUINTAL",
+      "cidade": "Coronel Fabriciano",
+      "valor": 67.66,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "29/07",
+      "titular": "Thais",
+      "estabelecimento": "FARMACIA INDIANA 142",
+      "cidade": "Teofilo Otoni",
+      "valor": 8.99,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "29/07",
+      "titular": "Thais",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 47.2,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "30/07",
+      "titular": "Thais",
+      "estabelecimento": "LANCHONETE DA VERA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 47.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "01/08",
+      "titular": "Thais",
+      "estabelecimento": "ALEXSANDER SILVA TEIXEIRA",
+      "cidade": "Timoteo",
+      "valor": 13.37,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "02/08",
+      "titular": "Thais",
+      "estabelecimento": "POSTO JR FAISAO VII",
+      "cidade": "Ipatinga",
+      "valor": 258.79,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "02/08",
+      "titular": "Thais",
+      "estabelecimento": "VS COMERCIO DE ALIMENTOS",
+      "cidade": "Ipatinga",
+      "valor": 98.6,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "02/08",
+      "titular": "Thais",
+      "estabelecimento": "ACAI FRUIT SHOW",
+      "cidade": "Coronel Fabriciano",
+      "valor": 20.95,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "03/08",
+      "titular": "Thais",
+      "estabelecimento": "POSTO PALHA VERDE JV",
+      "cidade": "Belo Horizonte",
+      "valor": 171.34,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "03/08",
+      "titular": "Thais",
+      "estabelecimento": "RECANTO DA CASCATA",
+      "cidade": "Sao Goncalo",
+      "valor": 76.5,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "03/08",
+      "titular": "Thais",
+      "estabelecimento": "VELOE*THAIS CRIST",
+      "cidade": "Barueri",
+      "valor": 50.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "05/08",
+      "titular": "Thais",
+      "estabelecimento": "ALTA PERFORMANCE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 94.9,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Thais",
+      "estabelecimento": "LANCH QUENTE FRIO",
+      "cidade": "Belo Horizonte",
+      "valor": 3.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Thais",
+      "estabelecimento": "VIVENDA DO CAMARAO",
+      "cidade": "Belo Horizonte",
+      "valor": 50.8,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Thais",
+      "estabelecimento": "Bacio di Latte-LJ0042",
+      "cidade": "Belo Horizonte",
+      "valor": 23.95,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Thais",
+      "estabelecimento": "DOCERIA FAMOSO LTDA",
+      "cidade": "Sao Goncalo",
+      "valor": 19.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Thais",
+      "estabelecimento": "VELOE*THAIS CRIST",
+      "cidade": "Barueri",
+      "valor": 50.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "07/08",
+      "titular": "Thais",
+      "estabelecimento": "PANIFICADORA SANTA HEL",
+      "cidade": "Timoteo",
+      "valor": 69.85,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "10/08",
+      "titular": "Thais",
+      "estabelecimento": "VELOE*THAIS CRIST",
+      "cidade": "Barueri",
+      "valor": 50.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "10/08",
+      "titular": "Thais",
+      "estabelecimento": "LEILA DENISE CORREA",
+      "cidade": "Patrocinio",
+      "valor": 48.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "12/08",
+      "titular": "Thais",
+      "estabelecimento": "CENTRO DE CONV DI ROMA",
+      "cidade": "Caldas Novas",
+      "valor": 200.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "12/08",
+      "titular": "Thais",
+      "estabelecimento": "ZP*ZE DO MANGO",
+      "cidade": "Caldas Novas",
+      "valor": 23.99,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "12/08",
+      "titular": "Thais",
+      "estabelecimento": "ROTA 23 CARNE DE SOL",
+      "cidade": "Caldas Novas",
+      "valor": 11.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "13/08",
+      "titular": "Thais",
+      "estabelecimento": "JIM.COM TREM GELADO",
+      "cidade": "Caldas Novas",
+      "valor": 30.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "13/08",
+      "titular": "Thais",
+      "estabelecimento": "PAMONHARIA",
+      "cidade": "Caldas Novas",
+      "valor": 26.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "16/08",
+      "titular": "Thais",
+      "estabelecimento": "VELOE*THAIS CRIST",
+      "cidade": "Barueri",
+      "valor": 50.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "16/08",
+      "titular": "Thais",
+      "estabelecimento": "PRESENTES CRIATIVOS",
+      "cidade": "Caldas Novas",
+      "valor": 12.94,
+      "categoria": "Presentes / Floricultura",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "17/08",
+      "titular": "Thais",
+      "estabelecimento": "CONTA VIVO",
+      "cidade": "Sao Paulo",
+      "valor": 81.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "17/08",
+      "titular": "Thais",
+      "estabelecimento": "FARMACIA INDIANA 227",
+      "cidade": "Itaobim",
+      "valor": 35.73,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "17/08",
+      "titular": "Thais",
+      "estabelecimento": "STAFE BANK",
+      "cidade": "Camaqua",
+      "valor": 85.79,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "18/08",
+      "titular": "Thais",
+      "estabelecimento": "THAIS DE ALVARENGA MAR",
+      "cidade": "Coronel Fabriciano",
+      "valor": 197.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "19/08",
+      "titular": "Thais",
+      "estabelecimento": "VELOE*THAIS CRIST",
+      "cidade": "Barueri",
+      "valor": 50.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "20/08",
+      "titular": "Thais",
+      "estabelecimento": "ZP*CASA DE CARNES ESPE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 30.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "20/08",
+      "titular": "Thais",
+      "estabelecimento": "STB*GLOBALDISTRIBUIDOR",
+      "cidade": "Fabriciano",
+      "valor": 21.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "21/08",
+      "titular": "Thais",
+      "estabelecimento": "AUTO POSTO AMERICA LTD",
+      "cidade": "Coronel Fabriciano",
+      "valor": 5.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "23/08",
+      "titular": "Thais",
+      "estabelecimento": "MariaGomesAraujoS",
+      "cidade": "Timoteo",
+      "valor": 25.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "03/09",
+      "titular": "Ramon",
+      "estabelecimento": "LIVELO S.A.*Clube",
+      "cidade": "Santana De Parnaiba",
+      "valor": 24.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 12,
+      "parcela_total": 12
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/11",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO CASAS BAHIA",
+      "cidade": "Rio De Janeiro",
+      "valor": 63.98,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 10,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "25/12",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Pneu B",
+      "cidade": "Uberlandia",
+      "valor": 221.82,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 8,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "25/02",
+      "titular": "Ramon",
+      "estabelecimento": "SLS HOTEL E RESTAURANTE",
+      "cidade": "Campos Do Jordao",
+      "valor": 255.96,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "04/03",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Friope",
+      "cidade": "Serra",
+      "valor": 371.87,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "28/03",
+      "titular": "Ramon",
+      "estabelecimento": "CB TINTAS",
+      "cidade": "Timoteo",
+      "valor": 272.61,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 5,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "20/04",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *Armazenamento",
+      "cidade": "Guarulhos",
+      "valor": 57.15,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 5,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "09/05",
+      "titular": "Ramon",
+      "estabelecimento": "ELETRO MOVEIS ACESIT",
+      "cidade": "Timoteo",
+      "valor": 109.8,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 5
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "16/05",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "cidade": "Osasco",
+      "valor": 239.0,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "RIACHUELO 272",
+      "cidade": "Ipatinga",
+      "valor": 149.99,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO CASAS BAHIA",
+      "cidade": "Rio De Janeiro",
+      "valor": 265.9,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "05/06",
+      "titular": "Ramon",
+      "estabelecimento": "AUTO TECH",
+      "cidade": "Coronel Fabriciano",
+      "valor": 141.66,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "21/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMHMC35",
+      "cidade": "Sao Paulo",
+      "valor": 214.73,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "29/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "cidade": "Sao Paulo",
+      "valor": 620.97,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "08/07",
+      "titular": "Ramon",
+      "estabelecimento": "NOBRE ARTE UTENSILIOS",
+      "cidade": "Campinas",
+      "valor": 125.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "30/07",
+      "titular": "Ramon",
+      "estabelecimento": "TOKIO MARINE*AUTO",
+      "cidade": "Sao Paulo",
+      "valor": 280.69,
+      "categoria": "Seguro",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "31/07",
+      "titular": "Ramon",
+      "estabelecimento": "SAO BARTOLOMEU",
+      "cidade": "Ipatinga",
+      "valor": 68.6,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "31/07",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 38.08,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "01/08",
+      "titular": "Ramon",
+      "estabelecimento": "CASA DE CARNES PRIMOS",
+      "cidade": "Timoteo",
+      "valor": 98.19,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "01/08",
+      "titular": "Ramon",
+      "estabelecimento": "RAPIDUCHA",
+      "cidade": "Timoteo",
+      "valor": 26.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "03/08",
+      "titular": "Ramon",
+      "estabelecimento": "TRADICAO GRILL E BEER",
+      "cidade": "Belo Horizonte",
+      "valor": 157.21,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "03/08",
+      "titular": "Ramon",
+      "estabelecimento": "MULTIPLAN ADMINISTRADO",
+      "cidade": "Belo Horizonte",
+      "valor": 23.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "03/08",
+      "titular": "Ramon",
+      "estabelecimento": "BELLEU S LANCHES",
+      "cidade": "Sao Goncalo",
+      "valor": 54.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "04/08",
+      "titular": "Ramon",
+      "estabelecimento": "VK CALCADOS",
+      "cidade": "Ipatinga",
+      "valor": 239.99,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "05/08",
+      "titular": "Ramon",
+      "estabelecimento": "FORNALHA PIZZARIA E HA",
+      "cidade": "Timoteo",
+      "valor": 78.41,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "05/08",
+      "titular": "Ramon",
+      "estabelecimento": "JOTTA GRILL BEER",
+      "cidade": "Timoteo",
+      "valor": 19.5,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Ramon",
+      "estabelecimento": "REDE RIVA 6 POSTO DE",
+      "cidade": "Timoteo",
+      "valor": 150.8,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Ramon",
+      "estabelecimento": "BOULEVARD BELO HORIZON",
+      "cidade": "Belo Horizonte",
+      "valor": 17.9,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Ramon",
+      "estabelecimento": "NETFLIX.COM",
+      "cidade": "Sao Paulo",
+      "valor": 20.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Ramon",
+      "estabelecimento": "BILLY THE GRILL - SANT",
+      "cidade": "Belo Horizonte",
+      "valor": 49.4,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "06/08",
+      "titular": "Ramon",
+      "estabelecimento": "BELLEU S LANCHES",
+      "cidade": "Sao Goncalo",
+      "valor": 62.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "07/08",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CENTRAL",
+      "cidade": "Ipatinga",
+      "valor": 100.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "08/08",
+      "titular": "Ramon",
+      "estabelecimento": "AUTO FIAT ABELHA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 160.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "09/08",
+      "titular": "Ramon",
+      "estabelecimento": "REDE RIVA 6 POSTO DE",
+      "cidade": "Timoteo",
+      "valor": 244.3,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "09/08",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 50.58,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "09/08",
+      "titular": "Ramon",
+      "estabelecimento": "GLOBO*Combo",
+      "cidade": "Rio De Janeiro",
+      "valor": 59.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 12
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "10/08",
+      "titular": "Ramon",
+      "estabelecimento": "REDE MILHAO FLORESTAL",
+      "cidade": "Florestal",
+      "valor": 40.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "10/08",
+      "titular": "Ramon",
+      "estabelecimento": "CONDOMINIO RESIDENCIAL",
+      "cidade": "Caldas Novas",
+      "valor": 20.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "10/08",
+      "titular": "Ramon",
+      "estabelecimento": "JARDINS ACQUA PARK",
+      "cidade": "Caldas Novas",
+      "valor": 400.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "10/08",
+      "titular": "Ramon",
+      "estabelecimento": "ZP*ROTA 23 SINGAPURA",
+      "cidade": "Caldas Novas",
+      "valor": 152.19,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "10/08",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CAMPOS ALTOS",
+      "cidade": "Campos Altos",
+      "valor": 137.39,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "10/08",
+      "titular": "Ramon",
+      "estabelecimento": "Postominasgerais",
+      "cidade": "Para De Minas",
+      "valor": 100.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "11/08",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO RIO QUENTE ADM",
+      "cidade": "Rio Quente",
+      "valor": 69.9,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "11/08",
+      "titular": "Ramon",
+      "estabelecimento": "HOT PETRO AUTO POSTO",
+      "cidade": "Caldas Novas",
+      "valor": 229.37,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "11/08",
+      "titular": "Ramon",
+      "estabelecimento": "HOT PARK RIO QUENTE",
+      "cidade": "Rio Quente",
+      "valor": 597.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "11/08",
+      "titular": "Ramon",
+      "estabelecimento": "SALA 14",
+      "cidade": "Rio Quente",
+      "valor": 65.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "11/08",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO RIO QUENTE ADM",
+      "cidade": "Rio Quente",
+      "valor": 251.85,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "11/08",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO RIO QUENTE ADM",
+      "cidade": "Rio Quente",
+      "valor": 233.58,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "12/08",
+      "titular": "Ramon",
+      "estabelecimento": "CENTRO DE CONV DI ROMA",
+      "cidade": "Caldas Novas",
+      "valor": 300.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "12/08",
+      "titular": "Ramon",
+      "estabelecimento": "CENTRO DE CONV DI ROMA",
+      "cidade": "Caldas Novas",
+      "valor": 30.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "12/08",
+      "titular": "Ramon",
+      "estabelecimento": "THERMAS DI ROMA H CLUB",
+      "cidade": "Caldas Novas",
+      "valor": 220.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "12/08",
+      "titular": "Ramon",
+      "estabelecimento": "THERMAS DI ROMA",
+      "cidade": "Caldas Novas",
+      "valor": 32.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "12/08",
+      "titular": "Ramon",
+      "estabelecimento": "ZP*ROTA 23 SINGAPURA",
+      "cidade": "Caldas Novas",
+      "valor": 58.74,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "13/08",
+      "titular": "Ramon",
+      "estabelecimento": "MP*TEACONFECCOES",
+      "cidade": "Caldas Novas",
+      "valor": 50.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "13/08",
+      "titular": "Ramon",
+      "estabelecimento": "BELLA NAPOLES",
+      "cidade": "Caldas Novas",
+      "valor": 181.75,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "13/08",
+      "titular": "Ramon",
+      "estabelecimento": "MP *CACHACARIA VAQ",
+      "cidade": "Caldas Novas",
+      "valor": 5.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "13/08",
+      "titular": "Ramon",
+      "estabelecimento": "DL*UberRides",
+      "cidade": "Sao Paulo",
+      "valor": 10.62,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "13/08",
+      "titular": "Ramon",
+      "estabelecimento": "ST. DIOCESANO NS SALETE",
+      "cidade": "Caldas Novas",
+      "valor": 6.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "13/08",
+      "titular": "Ramon",
+      "estabelecimento": "A PICOLETERIA ARTESANA",
+      "cidade": "Caldas Novas",
+      "valor": 13.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "14/08",
+      "titular": "Ramon",
+      "estabelecimento": "PIZZARIA SABATINI",
+      "cidade": "Caldas Novas",
+      "valor": 73.25,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "14/08",
+      "titular": "Ramon",
+      "estabelecimento": "CLUBE JD DI ROMA",
+      "cidade": "Caldas Novas",
+      "valor": 46.42,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "14/08",
+      "titular": "Ramon",
+      "estabelecimento": "ZP *PIRATAS PIZZARIA",
+      "cidade": "Caldas Novas",
+      "valor": 679.6,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "14/08",
+      "titular": "Ramon",
+      "estabelecimento": "DROGARIA LEVMAIS",
+      "cidade": "Caldas Novas",
+      "valor": 18.0,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "15/08",
+      "titular": "Ramon",
+      "estabelecimento": "JARDINS ACQUA PARK",
+      "cidade": "Caldas Novas",
+      "valor": 170.0,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "15/08",
+      "titular": "Ramon",
+      "estabelecimento": "DL*UberRides",
+      "cidade": "Sao Paulo",
+      "valor": 14.61,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "15/08",
+      "titular": "Ramon",
+      "estabelecimento": "DL*UberRides",
+      "cidade": "Sao Paulo",
+      "valor": 19.59,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "15/08",
+      "titular": "Ramon",
+      "estabelecimento": "Valori *CERVANTE BAR",
+      "cidade": "Caldas Novas",
+      "valor": 104.92,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "15/08",
+      "titular": "Ramon",
+      "estabelecimento": "PIRATAS PIZZARIA",
+      "cidade": "Caldas Novas",
+      "valor": 50.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "16/08",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO BEIJA FLOR",
+      "cidade": "Belo Horizonte",
+      "valor": 215.52,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "16/08",
+      "titular": "Ramon",
+      "estabelecimento": "RESTAURANTE BEIJAFLOR",
+      "cidade": "Belo Horizonte",
+      "valor": 111.96,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "16/08",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO DOIDAO",
+      "cidade": "Patrocinio",
+      "valor": 238.03,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "16/08",
+      "titular": "Ramon",
+      "estabelecimento": "Pmg conveniencia",
+      "cidade": "Para De Minas",
+      "valor": 28.45,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "18/08",
+      "titular": "Ramon",
+      "estabelecimento": "UNIPECAS",
+      "cidade": "Coronel Fabriciano",
+      "valor": 5.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "18/08",
+      "titular": "Ramon",
+      "estabelecimento": "Eventim *Eventim",
+      "cidade": "Sao Paulo",
+      "valor": 265.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 1,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "19/08",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO CENTRAL 5 PARA-S",
+      "cidade": "Coronel Fabriciano",
+      "valor": 200.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "19/08",
+      "titular": "Ramon",
+      "estabelecimento": "CAPPTA *QUENIA APARECI",
+      "cidade": "Coronel Fabriciano",
+      "valor": 49.0,
+      "categoria": "Outros",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "20/08",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 15.96,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "20/08",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 44.34,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "22/08",
+      "titular": "Ramon",
+      "estabelecimento": "GleidsonMorais",
+      "cidade": "Timoteo",
+      "valor": 80.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "24/08",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 35.52,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Setembro/2026",
+      "data": "25/08",
+      "titular": "Ramon",
+      "estabelecimento": "RP TIMOTEO LTDA",
+      "cidade": "Timoteo",
+      "valor": 146.3,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    }
+  ]
+};
+const GOAL_MENSAL = 7000;
+const MES_CURTO = {"Julho/2026":"Jul/26", "Agosto/2026":"Ago/26", "Setembro/2026":"Set/26"};
+
+const fmtBRL = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+const fmtBRL0 = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0});
+
+const isDark = () => window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+const SCALE_LIGHT = ['#003B7A','#0057B8','#1668C6','#2E7DD1','#4DA3FF','#7FBDFF','#A9D3FF','#DCEEFF'];
+const SCALE_DARK  = ['#DCEEFF','#A9D3FF','#7FBDFF','#4DA3FF','#2E7DD1','#1668C6','#0057B8','#153A66'];
+function scaleColor(rank){
+  const arr = isDark() ? SCALE_DARK : SCALE_LIGHT;
+  return arr[Math.min(rank, arr.length - 1)];
+}
+
+const meses = DATA.meses_disponiveis;
+let refMonth = meses[meses.length - 1];
+let currentPage = 'geral';
+let filtro = { categoria: null, titular: null, dia: null, busca: '' };
+
+function mesLabel(mes){ return mes === 'TODOS' ? 'todos os meses' : (MES_CURTO[mes] || mes); }
+function periodoCompleto(){
+  return `${MES_CURTO[meses[0]]||meses[0]} – ${MES_CURTO[meses[meses.length-1]]||meses[meses.length-1]}`;
+}
+
+let _aggFaturaCache = null;
+function aggFatura(){
+  if (_aggFaturaCache) return _aggFaturaCache;
+  const last = DATA.faturas[DATA.faturas.length - 1];
+  const soma = (k) => DATA.faturas.reduce((s,f)=>s+(f[k]||0), 0);
+  _aggFaturaCache = {
+    competencia: 'TODOS',
+    total_fatura: soma('total_fatura'),
+    compras_debitos: soma('compras_debitos'),
+    compras_a_vista: soma('compras_a_vista'),
+    compras_parceladas_no_mes: soma('compras_parceladas_no_mes'),
+    total_proximas_faturas_parceladas: last.total_proximas_faturas_parceladas,
+    limite_compras: last.limite_compras,
+    compras_utilizado: last.compras_utilizado,
+    compras_disponivel: last.compras_disponivel,
+    vencimento: null,
+  };
+  return _aggFaturaCache;
+}
+
+function fatura(mes){ return mes === 'TODOS' ? aggFatura() : DATA.faturas.find(f => f.competencia === mes); }
+function prevMonth(mes){
+  const i = meses.indexOf(mes);
+  return i > 0 ? meses[i - 1] : null;
+}
+function lancamentosDoMes(mes, incluirConta){
+  if (mes === 'TODOS') return DATA.lancamentos.filter(x => (incluirConta || x.titular !== 'Conta'));
+  return DATA.lancamentos.filter(x => x.competencia === mes && (incluirConta || x.titular !== 'Conta'));
+}
+
+function tooltip(el, html){
+  const tip = document.getElementById('tooltip');
+  const show = () => {
+    tip.innerHTML = html;
+    const r = el.getBoundingClientRect();
+    tip.style.left = (r.left + r.width/2) + 'px';
+    tip.style.top = r.top + 'px';
+    tip.classList.add('show');
+  };
+  el.addEventListener('pointerenter', show);
+  el.addEventListener('pointermove', show);
+  el.addEventListener('pointerleave', () => tip.classList.remove('show'));
+}
+
+// ---------- componentes reutilizáveis ----------
+
+function renderBarList(container, entries, opts){
+  opts = opts || {};
+  container.innerHTML = '';
+  const max = Math.max(1, ...entries.map(e => e.value));
+  const total = opts.total != null ? opts.total : entries.reduce((s,e)=>s+e.value,0) || 1;
+  entries.forEach((e, i) => {
+    const color = scaleColor(i);
+    const pctMax = Math.max(2, Math.round(e.value / max * 100));
+    const pctTotal = (e.value / total * 100).toFixed(1);
+    const row = document.createElement('div');
+    row.className = 'barrow' + (opts.onClick ? ' clickable' : '');
+    row.innerHTML = `
+      <div class="rowtop">
+        <span class="catname"><span class="dot" style="background:${color}"></span>${e.label}</span>
+        <span class="catval">${fmtBRL(e.value)}</span>
+      </div>
+      <div class="track"><div class="fill" style="width:${pctMax}%; background:${color}"></div></div>
+    `;
+    container.appendChild(row);
+    tooltip(row.querySelector('.fill'), `<b>${fmtBRL(e.value)}</b> · ${pctTotal}%${opts.onClick ? ' · clique para detalhar' : ''}`);
+    if (opts.onClick) row.addEventListener('click', () => opts.onClick(e.label));
+  });
+}
+
+function renderDonut(elDonut, elLegend, elVal, entries, centerLabel, onClick){
+  const total = entries.reduce((s,e)=>s+e.value,0) || 1;
+  let acc = 0;
+  const stops = entries.map((e, i) => {
+    const start = acc / total * 100;
+    acc += e.value;
+    const end = acc / total * 100;
+    return `${scaleColor(i)} ${start}% ${end}%`;
+  });
+  elDonut.style.background = stops.length ? `conic-gradient(${stops.join(',')})` : 'var(--surface-2)';
+  elVal.textContent = fmtBRL0(total);
+  elLegend.innerHTML = '';
+  entries.slice(0, 7).forEach((e, i) => {
+    const pct = (e.value/total*100).toFixed(0);
+    const it = document.createElement('div');
+    it.className = 'item' + (onClick ? ' clickable' : '');
+    it.innerHTML = `<span class="name"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${scaleColor(i)};flex:none;"></span>${e.label} · ${pct}%</span><span class="val">${fmtBRL(e.value)}</span>`;
+    elLegend.appendChild(it);
+    if (onClick) it.addEventListener('click', () => onClick(e.label));
+  });
+  if (centerLabel) elDonut.querySelector ? null : null;
+}
+
+function renderLineChart(svg, points, opts){
+  opts = opts || {};
+  svg.innerHTML = '';
+  const W = 560, H = 200, padL = 8, padR = 8, padT = 28, padB = 26;
+  const maxV = Math.max(1, ...points.map(p => p.value), opts.goal || 0);
+  const stepX = (W - padL - padR) / Math.max(1, points.length - 1);
+  const xy = points.map((p, i) => ({
+    x: padL + i * stepX,
+    y: padT + (1 - p.value / maxV) * (H - padT - padB),
+    p,
+  }));
+  const ns = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs) => {
+    const el = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([k,v]) => el.setAttribute(k, v));
+    return el;
+  };
+  // linhas de grade horizontais
+  for (let i = 0; i <= 2; i++){
+    const y = padT + i * (H - padT - padB) / 2;
+    svg.appendChild(mk('line', {x1: padL, x2: W - padR, y1: y, y2: y, class: 'grid-line'}));
+  }
+  // meta (opcional)
+  if (opts.goal){
+    const yGoal = padT + (1 - opts.goal / maxV) * (H - padT - padB);
+    const goalLine = mk('line', {x1: padL, x2: W - padR, y1: yGoal, y2: yGoal, stroke: 'var(--bad)', 'stroke-width': 1.5, 'stroke-dasharray': '4 4'});
+    svg.appendChild(goalLine);
+  }
+  // área + linha
+  const areaPts = `${xy[0].x},${H-padB} ` + xy.map(p => `${p.x},${p.y}`).join(' ') + ` ${xy[xy.length-1].x},${H-padB}`;
+  svg.appendChild(mk('polygon', {points: areaPts, class: 'area'}));
+  svg.appendChild(mk('polyline', {points: xy.map(p => `${p.x},${p.y}`).join(' '), class: 'line'}));
+  xy.forEach((p, i) => {
+    const isRef = opts.refIndex === i;
+    svg.appendChild(mk('circle', {cx: p.x, cy: p.y, r: isRef ? 5 : 4, class: 'dot' + (isRef ? '' : ' dim')}));
+    const t = mk('text', {x: p.x, y: p.y - 10, 'text-anchor': i === 0 ? 'start' : (i === xy.length-1 ? 'end' : 'middle'), class: 'val-label'});
+    t.textContent = fmtBRL0(p.p.value);
+    svg.appendChild(t);
+    const xt = mk('text', {x: p.x, y: H - 6, 'text-anchor': i === 0 ? 'start' : (i === xy.length-1 ? 'end' : 'middle'), class: 'x-label'});
+    xt.textContent = p.p.label;
+    svg.appendChild(xt);
+  });
+}
+
+function personCard(container, nome, avatarBg, total, pctFatura, top3, onCatClick){
+  container.innerHTML = `
+    <div class="person-head">
+      <div class="person-avatar" style="background:${avatarBg}">${nome[0]}</div>
+      <div class="person-name">${nome}</div>
+    </div>
+    <div class="person-stats">
+      <div class="col"><div class="l">Total gasto</div><div class="v">${fmtBRL(total)}</div></div>
+      <div class="col" style="text-align:right"><div class="l">% da fatura</div><div class="v">${pctFatura}%</div></div>
+    </div>
+    <div class="person-top3">
+      ${top3.map((c,i) => `<div class="row${onCatClick?' clickable':''}"><span class="name"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${scaleColor(i)};flex:none;display:inline-block;"></span>${c.label}</span><span class="pct">${c.pct}%</span></div>`).join('')}
+    </div>
+  `;
+  if (onCatClick){
+    [...container.querySelectorAll('.person-top3 .row')].forEach((row, i) => {
+      row.addEventListener('click', () => onCatClick(top3[i].label));
+    });
+  }
+}
+
+// ---------- página 1 · Visão Geral ----------
+
+function renderPaginaGeral(){
+  const f = fatura(refMonth);
+  const pm = prevMonth(refMonth);
+  const fPrev = pm ? fatura(pm) : null;
+  const rows = lancamentosDoMes(refMonth, false);
+
+  const statsWrap = document.getElementById('vg-stats');
+  statsWrap.innerHTML = '';
+  const tile = (label, value, foot, footClass, meterPct, meterOver) => {
+    const d = document.createElement('div');
+    d.className = 'tile';
+    d.innerHTML = `
+      <div class="label">${label}</div>
+      <div class="value">${value}</div>
+      <div class="foot${footClass ? ' '+footClass : ''}">${foot || '&nbsp;'}</div>
+      ${meterPct != null ? `<div class="meter"><span class="${meterOver?'over':''}" style="width:${meterPct}%"></span></div>` : ''}
+    `;
+    statsWrap.appendChild(d);
+  };
+  const labelFatura = refMonth === 'TODOS' ? 'Total no período' : 'Fatura atual';
+  const footFatura = refMonth === 'TODOS' ? periodoCompleto() : `Vencimento ${f.vencimento}`;
+  tile(labelFatura, fmtBRL(f.total_fatura), footFatura);
+  const usedPct = Math.min(100, Math.round(f.compras_utilizado / f.limite_compras * 100));
+  tile('Limite utilizado', usedPct + '%', `${fmtBRL(f.compras_utilizado)} de ${fmtBRL(f.limite_compras)}${refMonth==='TODOS' ? ' · mês mais recente' : ''}`, null, usedPct);
+  if (refMonth === 'TODOS'){
+    tile('Total de compras', fmtBRL(f.compras_debitos), `Somando ${meses.length} faturas`);
+  } else if (fPrev){
+    const variacao = (f.compras_debitos - fPrev.compras_debitos) / fPrev.compras_debitos * 100;
+    tile('Total de compras', fmtBRL(f.compras_debitos), `${(variacao>=0?'+':'')}${variacao.toFixed(1)}% vs mês anterior`, variacao>=0?'up':'down');
+  } else {
+    tile('Total de compras', fmtBRL(f.compras_debitos), 'sem mês anterior para comparar');
+  }
+  tile('Parcelas futuras', fmtBRL(f.total_proximas_faturas_parceladas), 'a vencer nas próximas faturas');
+  const metaRef = refMonth === 'TODOS' ? GOAL_MENSAL * meses.length : GOAL_MENSAL;
+  const metaLabel = refMonth === 'TODOS' ? `Meta do período (${fmtBRL0(metaRef)})` : `Meta mensal (${fmtBRL0(metaRef)})`;
+  const diffGoal = f.compras_debitos - metaRef;
+  tile(metaLabel, fmtBRL(f.compras_debitos),
+    diffGoal > 0 ? `${fmtBRL(diffGoal)} acima da meta` : `${fmtBRL(Math.abs(diffGoal))} abaixo da meta`,
+    diffGoal > 0 ? 'up' : 'down', Math.min(100, Math.round(f.compras_debitos/metaRef*100)), diffGoal > 0);
+
+  // evolução
+  const pontos = DATA.faturas.map(fm => ({label: MES_CURTO[fm.competencia]||fm.competencia, value: fm.total_fatura}));
+  renderLineChart(document.getElementById('vg-evo-chart'), pontos, {goal: GOAL_MENSAL, refIndex: meses.indexOf(refMonth)});
+  document.getElementById('vg-evo-sub').textContent = `Total da fatura por mês (linha tracejada = meta de ${fmtBRL0(GOAL_MENSAL)}).`;
+
+  // donut categorias
+  const catTotais = {};
+  rows.forEach(x => { catTotais[x.categoria] = (catTotais[x.categoria]||0) + x.valor; });
+  const catsOrdenadas = Object.entries(catTotais).sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label,value}));
+  renderDonut(document.getElementById('vg-donut'), document.getElementById('vg-donut-legend'), document.getElementById('vg-donut-val'), catsOrdenadas, null, (label) => goToLancamentos({categoria: label}));
+  document.getElementById('vg-cat-sub').textContent = `Como o gasto de ${mesLabel(refMonth)} se divide.`;
+
+  // Thais x Ramon
+  const th = rows.filter(x=>x.titular==='Thais'), ra = rows.filter(x=>x.titular==='Ramon');
+  const thTotal = th.reduce((s,x)=>s+x.valor,0), raTotal = ra.reduce((s,x)=>s+x.valor,0);
+  const totalPessoas = thTotal + raTotal || 1;
+  const top3 = (arr) => {
+    const t = {};
+    arr.forEach(x => t[x.categoria] = (t[x.categoria]||0) + x.valor);
+    const tot = arr.reduce((s,x)=>s+x.valor,0) || 1;
+    return Object.entries(t).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([label,v])=>({label, pct: Math.round(v/tot*100)}));
+  };
+  personCard(document.getElementById('vg-person-thais'), 'Thaís', 'var(--royal)', thTotal, Math.round(thTotal/totalPessoas*100), top3(th), (label) => goToLancamentos({categoria: label, titular: 'Thais'}));
+  personCard(document.getElementById('vg-person-ramon'), 'Ramon', 'var(--navy)', raTotal, Math.round(raTotal/totalPessoas*100), top3(ra), (label) => goToLancamentos({categoria: label, titular: 'Ramon'}));
+
+  // maior categoria + dica
+  document.getElementById('vg-maior-titulo').textContent = refMonth === 'TODOS' ? 'Maior categoria do período' : 'Maior categoria do mês';
+  if (catsOrdenadas.length){
+    const maior = catsOrdenadas[0];
+    document.getElementById('vg-maior-cat').textContent = maior.label;
+    document.getElementById('vg-maior-sub').textContent = `${fmtBRL(maior.value)} · ${(maior.value/(rows.reduce((s,x)=>s+x.valor,0)||1)*100).toFixed(0)}% da fatura de ${mesLabel(refMonth)}`;
+    const dicas = {
+      'Alimentação': 'Restaurantes e delivery pesam bastante — vale planejar as refeições da semana para segurar esse gasto.',
+      'Viagem / Lazer': 'Gasto de viagem costuma ser pontual — vale separar um orçamento próprio para lazer, fora do dia a dia do cartão.',
+      'Casa / Vestuário': 'Compras de casa e roupas se repetem todo mês — um orçamento fixo ajuda a não deixar o gasto crescer sem perceber.',
+      'Posto / Automóvel': 'Combustível e transporte são recorrentes — comparar preços entre postos costuma trazer economia real.',
+      'Compras online': 'Compras online tendem a ser por impulso — um intervalo de alguns dias antes de finalizar ajuda a filtrar o que é essencial.',
+    };
+    document.getElementById('vg-dica').innerHTML = `<b>Dica do mês:</b> ${dicas[maior.label] || 'Vale acompanhar essa categoria de perto nos próximos meses.'}`;
+  }
+}
+
+// ---------- página 2 · Nosso Casal ----------
+
+function renderPaginaCasal(){
+  const f = fatura(refMonth);
+  const rows = lancamentosDoMes(refMonth, false);
+  const th = rows.filter(x=>x.titular==='Thais'), ra = rows.filter(x=>x.titular==='Ramon');
+  const thTotal = th.reduce((s,x)=>s+x.valor,0), raTotal = ra.reduce((s,x)=>s+x.valor,0);
+  const totalPessoas = thTotal + raTotal || 1;
+  const top3 = (arr) => {
+    const t = {};
+    arr.forEach(x => t[x.categoria] = (t[x.categoria]||0) + x.valor);
+    const tot = arr.reduce((s,x)=>s+x.valor,0) || 1;
+    return Object.entries(t).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([label,v])=>({label, pct: Math.round(v/tot*100)}));
+  };
+  personCard(document.getElementById('ns-person-thais'), 'Thaís', 'var(--royal)', thTotal, Math.round(thTotal/totalPessoas*100), top3(th), (label) => goToLancamentos({categoria: label, titular: 'Thais'}));
+  personCard(document.getElementById('ns-person-ramon'), 'Ramon', 'var(--navy)', raTotal, Math.round(raTotal/totalPessoas*100), top3(ra), (label) => goToLancamentos({categoria: label, titular: 'Ramon'}));
+
+  document.getElementById('ns-total').textContent = fmtBRL(f.compras_debitos);
+  const lider = thTotal >= raTotal ? 'Thaís' : 'Ramon';
+  const liderPct = Math.round(Math.max(thTotal,raTotal)/totalPessoas*100);
+  document.getElementById('ns-lead').innerHTML = `${lider} concentrou mais gastos em ${mesLabel(refMonth)} <b>(${liderPct}%)</b>`;
+
+  const catTotais = {};
+  rows.forEach(x => { catTotais[x.categoria] = (catTotais[x.categoria]||0) + x.valor; });
+  const catsOrdenadas = Object.entries(catTotais).sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label,value}));
+  renderBarList(document.getElementById('ns-cat-bars'), catsOrdenadas, {onClick: (label) => goToLancamentos({categoria: label})});
+  document.getElementById('ns-cat-sub').textContent = `Somando Thaís + Ramon em ${mesLabel(refMonth)}.`;
+
+  // categorias que mais cresceram
+  const cr = DATA.categorias_crescimento || [];
+  const crMeses = DATA.categorias_crescimento_meses;
+  document.getElementById('ns-growth-sub').textContent = crMeses
+    ? `${MES_CURTO[crMeses.atual]||crMeses.atual} vs ${MES_CURTO[crMeses.anterior]||crMeses.anterior}.`
+    : '—';
+  const growthWrap = document.getElementById('ns-growth-list');
+  growthWrap.innerHTML = '';
+  cr.slice(0,6).forEach((c,i) => {
+    const up = c.delta >= 0;
+    const row = document.createElement('div');
+    row.className = 'growth-row clickable';
+    row.innerHTML = `
+      <span class="name"><span class="dot" style="width:8px;height:8px;border-radius:50%;background:${scaleColor(i)};flex:none;display:inline-block;"></span>${c.categoria}</span>
+      <span class="delta ${up?'up':'down'}">${up?'+':''}${fmtBRL(c.delta)}${c.delta_pct!=null ? ` (${up?'+':''}${c.delta_pct}%)` : ''}</span>
+    `;
+    row.addEventListener('click', () => goToLancamentos({categoria: c.categoria}));
+    growthWrap.appendChild(row);
+  });
+
+  // evolução por titular
+  const pontosThais = DATA.faturas.map(fm => ({label: MES_CURTO[fm.competencia]||fm.competencia, value: (DATA.evolucao_titular[fm.competencia]||{}).Thais || 0}));
+  const pontosRamon = DATA.faturas.map(fm => ({label: MES_CURTO[fm.competencia]||fm.competencia, value: (DATA.evolucao_titular[fm.competencia]||{}).Ramon || 0}));
+  renderDualLineChart(document.getElementById('ns-evo-chart'), pontosThais, pontosRamon);
+  document.getElementById('ns-evo-legend').innerHTML = `
+    <span class="item"><span class="name"><span class="dot" style="width:9px;height:9px;border-radius:50%;background:var(--royal);display:inline-block;"></span>Thaís</span></span>
+    <span class="item"><span class="name"><span class="dot" style="width:9px;height:9px;border-radius:50%;background:var(--navy);display:inline-block;"></span>Ramon</span></span>
+  `;
+}
+
+function renderDualLineChart(svg, ptsA, ptsB){
+  svg.innerHTML = '';
+  const W = 560, H = 200, padL = 8, padR = 8, padT = 24, padB = 26;
+  const maxV = Math.max(1, ...ptsA.map(p=>p.value), ...ptsB.map(p=>p.value));
+  const stepX = (W - padL - padR) / Math.max(1, ptsA.length - 1);
+  const ns = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs) => { const el = document.createElementNS(ns, tag); Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v)); return el; };
+  for (let i=0;i<=2;i++){
+    const y = padT + i*(H-padT-padB)/2;
+    svg.appendChild(mk('line', {x1:padL,x2:W-padR,y1:y,y2:y,class:'grid-line'}));
+  }
+  const toXY = (pts, color) => {
+    const xy = pts.map((p,i)=>({x: padL+i*stepX, y: padT+(1-p.value/maxV)*(H-padT-padB), p}));
+    svg.appendChild(mk('polyline', {points: xy.map(p=>`${p.x},${p.y}`).join(' '), fill:'none', stroke:color, 'stroke-width':2.5}));
+    xy.forEach((p,i)=>{
+      svg.appendChild(mk('circle', {cx:p.x, cy:p.y, r:4, fill:color}));
+      const t = mk('text', {x:p.x, y:p.y-9, 'text-anchor': i===0?'start':(i===xy.length-1?'end':'middle'), class:'val-label'});
+      t.textContent = fmtBRL0(p.p.value);
+      svg.appendChild(t);
+      if (color === 'var(--royal)'){
+        const xt = mk('text', {x:p.x, y:H-6, 'text-anchor': i===0?'start':(i===xy.length-1?'end':'middle'), class:'x-label'});
+        xt.textContent = p.p.label;
+        svg.appendChild(xt);
+      }
+    });
+  };
+  toXY(ptsB, 'var(--navy)');
+  toXY(ptsA, 'var(--royal)');
+}
+
+// ---------- página 3 · Raio-X da Fatura ----------
+
+function renderPaginaRaioX(){
+  const f = fatura(refMonth);
+  const rows = lancamentosDoMes(refMonth, false);
+
+  const statsWrap = document.getElementById('rx-stats');
+  statsWrap.innerHTML = '';
+  const tile = (label, value, foot) => {
+    const d = document.createElement('div');
+    d.className = 'tile';
+    d.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div><div class="foot">${foot||'&nbsp;'}</div>`;
+    statsWrap.appendChild(d);
+  };
+  const labelTotal = refMonth === 'TODOS' ? 'Total do período' : 'Total da fatura';
+  const footTotal = refMonth === 'TODOS' ? periodoCompleto() : `Vencimento ${f.vencimento}`;
+  tile(labelTotal, fmtBRL(f.total_fatura), footTotal);
+  tile('Compras à vista', fmtBRL(f.compras_a_vista), `${(f.compras_a_vista/f.compras_debitos*100).toFixed(0)}% da fatura`);
+  tile('Parcelado neste mês', fmtBRL(f.compras_parceladas_no_mes), `${(f.compras_parceladas_no_mes/f.compras_debitos*100).toFixed(0)}% da fatura`);
+  tile('Parcelas futuras', fmtBRL(f.total_proximas_faturas_parceladas), 'a vencer nas próximas faturas');
+
+  // gastos por dia
+  const porDia = {};
+  rows.forEach(x => { const dia = x.data.split('/')[0]; porDia[dia] = (porDia[dia]||0) + x.valor; });
+  const dias = Array.from({length:31}, (_,i)=> String(i+1).padStart(2,'0'));
+  const maxDia = Math.max(1, ...Object.values(porDia));
+  const daybarsWrap = document.getElementById('rx-daybars');
+  daybarsWrap.innerHTML = '';
+  let temDadoNoDia = false;
+  dias.forEach(d => {
+    const v = porDia[d] || 0;
+    if (v > 0) temDadoNoDia = true;
+    const col = document.createElement('div');
+    col.className = 'col' + (v === 0 ? ' empty' : ' clickable');
+    col.style.height = v === 0 ? '2px' : Math.max(4, Math.round(v/maxDia*150)) + 'px';
+    if (v > 0){
+      tooltip(col, `Dia ${d}: <b>${fmtBRL(v)}</b> · clique para detalhar`);
+      col.addEventListener('click', () => goToLancamentos({dia: d}));
+    }
+    daybarsWrap.appendChild(col);
+  });
+  document.getElementById('rx-day-axis').innerHTML = `<span>01</span><span>10</span><span>20</span><span>31</span>`;
+  document.getElementById('rx-day-sub').textContent = `Lançamentos de ${mesLabel(refMonth)}, por dia do mês.`;
+
+  // ranking categorias
+  const catTotais = {};
+  rows.forEach(x => { catTotais[x.categoria] = (catTotais[x.categoria]||0) + x.valor; });
+  const catsOrdenadas = Object.entries(catTotais).sort((a,b)=>b[1]-a[1]).map(([label,value])=>({label,value}));
+  renderBarList(document.getElementById('rx-rank-bars'), catsOrdenadas, {onClick: (label) => goToLancamentos({categoria: label})});
+  document.getElementById('rx-rank-sub').textContent = `Categorias de ${mesLabel(refMonth)}, por valor.`;
+
+  // parcelas em aberto
+  const parcBody = document.getElementById('rx-parc-body');
+  const abertos = DATA.parcelas_em_aberto || [];
+  parcBody.innerHTML = abertos.length ? abertos.slice(0,10).map(p => `
+    <tr>
+      <td class="estab">${p.estabelecimento}<div style="font-size:11px;color:var(--text-3)">${p.titular}</div></td>
+      <td>${p.parcela_atual}/${p.parcela_total}</td>
+      <td class="num">${fmtBRL(p.valor_total_compra)}</td>
+    </tr>`).join('') : `<tr><td colspan="3" class="empty">Nenhuma parcela em aberto identificada.</td></tr>`;
+  const ultimoMes = meses[meses.length-1];
+  document.getElementById('rx-parc-sub').textContent = `Compras parceladas ainda não quitadas, com base na fatura de ${MES_CURTO[ultimoMes]||ultimoMes}.`;
+
+  // compras recorrentes
+  const recBody = document.getElementById('rx-rec-body');
+  const recs = DATA.compras_recorrentes || [];
+  recBody.innerHTML = recs.length ? recs.slice(0,10).map(r => `
+    <tr><td class="estab">${r.estabelecimento}<div style="font-size:11px;color:var(--text-3)">${r.categoria}</div></td><td>${r.frequencia}</td><td class="num">${fmtBRL(r.valor_medio)}</td></tr>
+  `).join('') : `<tr><td colspan="3" class="empty">Nenhuma compra recorrente identificada.</td></tr>`;
+
+  // maiores transações do mês
+  const maiores = [...rows].sort((a,b)=>b.valor-a.valor).slice(0,10);
+  document.getElementById('rx-maiores-body').innerHTML = maiores.length ? maiores.map(x => `
+    <tr class="clickable" data-estab="${x.estabelecimento.replace(/"/g,'&quot;')}"><td>${x.data}</td><td class="estab">${x.estabelecimento}</td><td class="num">${fmtBRL(x.valor)}</td></tr>
+  `).join('') : `<tr><td colspan="3" class="empty">Sem lançamentos.</td></tr>`;
+  [...document.querySelectorAll('#rx-maiores-body tr[data-estab]')].forEach(tr => {
+    tr.addEventListener('click', () => goToLancamentos({busca: tr.dataset.estab}));
+  });
+  document.getElementById('rx-maiores-sub').textContent = `Top 10 lançamentos de ${mesLabel(refMonth)}.`;
+
+  // comprometimento do limite
+  const pct = Math.min(100, f.compras_utilizado / f.limite_compras * 100);
+  document.getElementById('rx-gauge').style.background = `conic-gradient(var(--royal) ${pct}%, var(--surface-2) ${pct}% 100%)`;
+  document.getElementById('rx-gauge-val').textContent = Math.round(pct) + '%';
+  document.getElementById('rx-gauge-sub').textContent = refMonth === 'TODOS' ? 'Limite de compras (mês mais recente).' : `Limite de compras em ${MES_CURTO[refMonth]||refMonth}.`;
+  document.getElementById('rx-gauge-facts').innerHTML = `
+    <div class="row"><span>Utilizado</span><b>${fmtBRL(f.compras_utilizado)}</b></div>
+    <div class="row"><span>Disponível</span><b>${fmtBRL(f.compras_disponivel)}</b></div>
+    <div class="row"><span>Limite total</span><b>${fmtBRL(f.limite_compras)}</b></div>
+  `;
+}
+
+// ---------- navegação ----------
+
+function renderHeader(){
+  const titles = {
+    geral: ['Visão Geral', 'Como está nossa fatura?'],
+    casal: ['Nosso Casal', 'Onde estamos gastando?'],
+    raiox: ['Raio-X da Fatura', 'Para onde foi o dinheiro?'],
+    lancamentos: ['Lançamentos', 'O detalhe de cada compra da fatura.'],
+  };
+  const [t, s] = titles[currentPage];
+  document.getElementById('hdr-title').textContent = t;
+  document.getElementById('hdr-sub').textContent = s;
+}
+
+function renderAll(){
+  renderHeader();
+  if (currentPage === 'geral') renderPaginaGeral();
+  else if (currentPage === 'casal') renderPaginaCasal();
+  else if (currentPage === 'raiox') renderPaginaRaioX();
+  else renderPaginaLancamentos();
+}
+
+function setActiveTab(page){
+  [...document.getElementById('page-tabs').children].forEach(b => b.classList.toggle('active', b.dataset.page === page));
+}
+function showPage(page){
+  ['geral','casal','raiox','lancamentos'].forEach(p => {
+    document.getElementById('page-' + p).hidden = p !== page;
+  });
+  document.getElementById('tooltip').classList.remove('show');
+}
+function goToLancamentos(patch){
+  Object.assign(filtro, patch);
+  currentPage = 'lancamentos';
+  setActiveTab('lancamentos');
+  showPage('lancamentos');
+  renderAll();
+}
+
+// ---------- página 4 · Lançamentos ----------
+
+function renderPaginaLancamentos(){
+  const rows = lancamentosDoMes(refMonth, false);
+
+  const catSel = document.getElementById('lc-filtro-cat');
+  if (catSel.options.length <= 1){
+    const cats = Array.from(new Set(DATA.lancamentos.map(x => x.categoria))).sort();
+    cats.forEach(c => {
+      const o = document.createElement('option');
+      o.value = c; o.textContent = c;
+      catSel.appendChild(o);
+    });
+  }
+  catSel.value = filtro.categoria || '';
+  document.getElementById('lc-filtro-titular').value = filtro.titular || '';
+  document.getElementById('lc-busca').value = filtro.busca || '';
+
+  const filtered = rows.filter(x => {
+    if (filtro.categoria && x.categoria !== filtro.categoria) return false;
+    if (filtro.titular && x.titular !== filtro.titular) return false;
+    if (filtro.dia && x.data.split('/')[0] !== filtro.dia) return false;
+    if (filtro.busca && !x.estabelecimento.toLowerCase().includes(filtro.busca.toLowerCase())) return false;
+    return true;
+  }).sort((a,b) => b.valor - a.valor);
+
+  const total = filtered.reduce((s,x)=>s+x.valor,0);
+  document.getElementById('lc-resumo').textContent = `${filtered.length} lançamento${filtered.length===1?'':'s'} · ${fmtBRL(total)}`;
+  document.getElementById('lc-sub').textContent = `Lançamentos de ${mesLabel(refMonth)}.`;
+
+  const chips = [];
+  if (filtro.categoria) chips.push({label: `Categoria: ${filtro.categoria}`, clear: () => filtro.categoria = null});
+  if (filtro.titular) chips.push({label: `Titular: ${filtro.titular === 'Thais' ? 'Thaís' : filtro.titular}`, clear: () => filtro.titular = null});
+  if (filtro.dia) chips.push({label: `Dia: ${filtro.dia}`, clear: () => filtro.dia = null});
+  if (filtro.busca) chips.push({label: `Busca: ${filtro.busca}`, clear: () => filtro.busca = ''});
+  const chipsWrap = document.getElementById('lc-chips');
+  chipsWrap.innerHTML = '';
+  chips.forEach(c => {
+    const el = document.createElement('button');
+    el.className = 'filter-chip';
+    el.type = 'button';
+    el.innerHTML = `${c.label} <span aria-hidden="true">&times;</span>`;
+    el.addEventListener('click', () => { c.clear(); renderPaginaLancamentos(); });
+    chipsWrap.appendChild(el);
+  });
+
+  document.getElementById('lc-body').innerHTML = filtered.length ? filtered.map(x => `
+    <tr>
+      <td>${x.data}</td>
+      <td class="estab">${x.estabelecimento}<div style="font-size:11px;color:var(--text-3)">${x.titular === 'Thais' ? 'Thaís' : x.titular} · ${x.categoria}${x.parcela_total ? ` · ${x.parcela_atual}/${x.parcela_total}` : ''}</div></td>
+      <td class="num">${fmtBRL(x.valor)}</td>
+    </tr>
+  `).join('') : `<tr><td colspan="3" class="empty">Nenhum lançamento encontrado com esses filtros.</td></tr>`;
+}
+
+function buildMesSelect(){
+  const sel = document.getElementById('mes-select');
+  sel.innerHTML = '';
+  meses.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m; opt.textContent = MES_CURTO[m] || m;
+    if (m === refMonth) opt.selected = true;
+    sel.appendChild(opt);
+  });
+  const optTodos = document.createElement('option');
+  optTodos.value = 'TODOS'; optTodos.textContent = 'Todos os meses';
+  sel.appendChild(optTodos);
+  sel.addEventListener('change', () => { refMonth = sel.value; renderAll(); });
+}
+
+document.getElementById('page-tabs').addEventListener('click', (e) => {
+  const btn = e.target.closest('button');
+  if (!btn) return;
+  currentPage = btn.dataset.page;
+  setActiveTab(currentPage);
+  showPage(currentPage);
+  renderAll();
+});
+
+document.getElementById('lc-busca').addEventListener('input', (e) => { filtro.busca = e.target.value; renderPaginaLancamentos(); });
+document.getElementById('lc-filtro-cat').addEventListener('change', (e) => { filtro.categoria = e.target.value || null; renderPaginaLancamentos(); });
+document.getElementById('lc-filtro-titular').addEventListener('change', (e) => { filtro.titular = e.target.value || null; renderPaginaLancamentos(); });
+
+buildMesSelect();
+renderAll();
+</script>
