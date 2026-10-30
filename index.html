@@ -132,13 +132,6 @@
   }
   .card h2{ font-size:14.5px; font-weight:700; margin:0 0 2px; }
   .card .card-sub{ font-size:12px; color:var(--text-3); margin-bottom:14px; }
-  .card-head-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .card-head-row h2{ margin:0; }
-  .card-select{
-    font:600 12.5px "Manrope", system-ui, sans-serif; color:var(--text-1);
-    background:var(--surface-2); border:1px solid var(--border); border-radius:9px;
-    padding:7px 10px; outline:none; cursor:pointer; flex:none;
-  }
 
   /* barras horizontais de categoria (escala monocromática de azul) */
   .barlist{ display:flex; flex-direction:column; gap:11px; }
@@ -370,15 +363,6 @@
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-head-row">
-        <h2>Evolução por categoria</h2>
-        <select class="card-select" id="vg-cat-evo-select"></select>
-      </div>
-      <div class="card-sub" id="vg-cat-evo-sub">—</div>
-      <svg class="linechart" id="vg-cat-evo-chart" viewBox="0 0 560 200" preserveAspectRatio="none"></svg>
-    </div>
-
   </div>
 
   <!-- ===================== PÁGINA 2 · NOSSO CASAL ===================== -->
@@ -507,13 +491,14 @@
 <div class="tooltip" id="tooltip"></div>
 
 <script>
-const DATA = {
-  "gerado_em": "2026-10-01",
+const DATA = /*__DATA__*/{
+  "gerado_em": "2026-10-30",
   "meses_disponiveis": [
     "Julho/2026",
     "Agosto/2026",
     "Setembro/2026",
-    "Outubro/2026"
+    "Outubro/2026",
+    "Novembro/2026"
   ],
   "faturas": [
     {
@@ -587,100 +572,122 @@ const DATA = {
       "arquivo": "BradescoCartoes30-09-2026-19-20-53.pdf",
       "compras_a_vista": 4929.11,
       "compras_parceladas_no_mes": 4216.06
+    },
+    {
+      "competencia": "Novembro/2026",
+      "situacao": "fechada",
+      "vencimento": "08/11/2026",
+      "fechamento_proxima": "26/11/2026",
+      "total_fatura": 15868.97,
+      "compras_debitos": 15963.96,
+      "limite_compras": 37500.0,
+      "compras_utilizado": 28439.8,
+      "compras_disponivel": 9060.2,
+      "pagamento_minimo": 1586.89,
+      "total_proximas_faturas_parceladas": 12570.83,
+      "total_thais": 1783.06,
+      "total_ramon": 14082.06,
+      "arquivo": "BradescoCartoes30-10-2026-07-36-24.pdf",
+      "compras_a_vista": 6806.22,
+      "compras_parceladas_no_mes": 9058.9
     }
   ],
   "categorias_completas_ordem": [
     "Alimentação",
-    "Casa / Vestuário",
     "Viagem / Lazer",
     "Posto / Automóvel",
+    "Casa / Vestuário",
     "Compras online",
-    "Saúde / Bem-estar",
+    "Outros",
     "Assinaturas / Contas",
+    "Saúde / Bem-estar",
     "Seguro",
     "Beleza / Estética",
     "Presentes / Floricultura",
-    "Outros",
     "Tarifas bancárias"
   ],
   "categorias_totais_geral": {
-    "Alimentação": 8990.41,
-    "Casa / Vestuário": 7168.69,
-    "Viagem / Lazer": 6900.85,
-    "Posto / Automóvel": 6406.77,
-    "Compras online": 4084.48,
-    "Saúde / Bem-estar": 2234.12,
-    "Assinaturas / Contas": 2033.77,
+    "Alimentação": 10163.14,
+    "Viagem / Lazer": 9193.22,
+    "Posto / Automóvel": 8602.33,
+    "Casa / Vestuário": 7974.31,
+    "Compras online": 6723.82,
+    "Outros": 4765.4,
+    "Assinaturas / Contas": 3466.22,
+    "Saúde / Bem-estar": 2510.77,
     "Seguro": 1405.36,
-    "Beleza / Estética": 680.0,
+    "Beleza / Estética": 1125.0,
     "Presentes / Floricultura": 295.92,
-    "Outros": 160.0,
-    "Tarifas bancárias": 11.55
+    "Tarifas bancárias": 15.4
   },
   "chart_categories_order": [
     "Alimentação",
-    "Casa / Vestuário",
+    "Outros",
     "Viagem / Lazer",
     "Posto / Automóvel",
+    "Casa / Vestuário",
     "Compras online",
-    "Outros",
-    "Saúde / Bem-estar",
     "Assinaturas / Contas"
   ],
   "chart_category_map": {
     "Alimentação": "Alimentação",
-    "Casa / Vestuário": "Casa / Vestuário",
     "Viagem / Lazer": "Viagem / Lazer",
     "Posto / Automóvel": "Posto / Automóvel",
+    "Casa / Vestuário": "Casa / Vestuário",
     "Compras online": "Compras online",
-    "Saúde / Bem-estar": "Saúde / Bem-estar",
+    "Outros": "Outros",
     "Assinaturas / Contas": "Assinaturas / Contas",
+    "Saúde / Bem-estar": "Outros",
     "Seguro": "Outros",
     "Beleza / Estética": "Outros",
     "Presentes / Floricultura": "Outros",
-    "Outros": "Outros",
     "Tarifas bancárias": "Outros"
   },
   "evolucao_mensal": {
     "Julho/2026": {
       "Alimentação": 1674.21,
-      "Casa / Vestuário": 2406.27,
+      "Outros": 1119.87,
       "Viagem / Lazer": 470.69,
       "Posto / Automóvel": 874.67,
+      "Casa / Vestuário": 2406.27,
       "Compras online": 1169.61,
-      "Outros": 605.63,
-      "Saúde / Bem-estar": 514.24,
       "Assinaturas / Contas": 493.76
     },
     "Agosto/2026": {
       "Alimentação": 1772.66,
-      "Casa / Vestuário": 2038.65,
+      "Outros": 1254.0,
       "Viagem / Lazer": 1422.23,
       "Posto / Automóvel": 1558.34,
+      "Casa / Vestuário": 2038.65,
       "Compras online": 1066.88,
-      "Outros": 430.54,
-      "Saúde / Bem-estar": 823.46,
       "Assinaturas / Contas": 440.8
     },
     "Setembro/2026": {
       "Alimentação": 3294.71,
-      "Casa / Vestuário": 1522.39,
+      "Outros": 607.74,
       "Viagem / Lazer": 4094.47,
       "Posto / Automóvel": 2531.1,
+      "Casa / Vestuário": 1522.39,
       "Compras online": 958.15,
-      "Outros": 389.62,
-      "Saúde / Bem-estar": 218.12,
       "Assinaturas / Contas": 451.7
     },
     "Outubro/2026": {
       "Alimentação": 2248.83,
-      "Casa / Vestuário": 1201.38,
+      "Outros": 1805.34,
       "Viagem / Lazer": 913.46,
       "Posto / Automóvel": 1442.66,
+      "Casa / Vestuário": 1201.38,
       "Compras online": 889.84,
-      "Outros": 1127.04,
-      "Saúde / Bem-estar": 678.3,
       "Assinaturas / Contas": 647.51
+    },
+    "Novembro/2026": {
+      "Alimentação": 1172.73,
+      "Outros": 5330.9,
+      "Viagem / Lazer": 2292.37,
+      "Posto / Automóvel": 2195.56,
+      "Casa / Vestuário": 805.62,
+      "Compras online": 2639.34,
+      "Assinaturas / Contas": 1432.45
     }
   },
   "evolucao_titular": {
@@ -699,143 +706,165 @@ const DATA = {
     "Outubro/2026": {
       "Thais": 1008.01,
       "Ramon": 8137.16
+    },
+    "Novembro/2026": {
+      "Thais": 1783.06,
+      "Ramon": 14082.06
     }
   },
   "categorias_por_titular": {
     "Thais": {
-      "Alimentação": 2107.29,
-      "Casa / Vestuário": 2047.53,
-      "Posto / Automóvel": 1065.97,
-      "Saúde / Bem-estar": 898.03,
-      "Assinaturas / Contas": 721.0,
+      "Casa / Vestuário": 2424.25,
+      "Alimentação": 2344.29,
+      "Saúde / Bem-estar": 1174.68,
+      "Posto / Automóvel": 1134.05,
+      "Assinaturas / Contas": 902.0,
+      "Outros": 643.61,
       "Viagem / Lazer": 456.55,
       "Presentes / Floricultura": 295.92,
       "Beleza / Estética": 235.0,
       "Compras online": 136.62
     },
     "Ramon": {
-      "Alimentação": 6883.12,
-      "Viagem / Lazer": 6444.3,
-      "Posto / Automóvel": 5340.8,
-      "Casa / Vestuário": 5121.16,
-      "Compras online": 3947.86,
+      "Viagem / Lazer": 8736.67,
+      "Alimentação": 7818.85,
+      "Posto / Automóvel": 7468.28,
+      "Compras online": 6587.2,
+      "Casa / Vestuário": 5550.06,
+      "Outros": 4121.79,
+      "Assinaturas / Contas": 2564.22,
       "Seguro": 1405.36,
       "Saúde / Bem-estar": 1336.09,
-      "Assinaturas / Contas": 1312.77,
-      "Beleza / Estética": 445.0,
-      "Outros": 160.0
+      "Beleza / Estética": 890.0
     }
   },
   "categorias_crescimento": [
     {
       "categoria": "Outros",
-      "atual": 1127.04,
-      "anterior": 389.62,
-      "delta": 737.42,
-      "delta_pct": 189.3
-    },
-    {
-      "categoria": "Saúde / Bem-estar",
-      "atual": 678.3,
-      "anterior": 218.12,
-      "delta": 460.18,
-      "delta_pct": 211.0
-    },
-    {
-      "categoria": "Assinaturas / Contas",
-      "atual": 647.51,
-      "anterior": 451.7,
-      "delta": 195.81,
-      "delta_pct": 43.3
+      "atual": 5330.9,
+      "anterior": 1805.34,
+      "delta": 3525.56,
+      "delta_pct": 195.3
     },
     {
       "categoria": "Compras online",
-      "atual": 889.84,
-      "anterior": 958.15,
-      "delta": -68.31,
-      "delta_pct": -7.1
-    },
-    {
-      "categoria": "Casa / Vestuário",
-      "atual": 1201.38,
-      "anterior": 1522.39,
-      "delta": -321.01,
-      "delta_pct": -21.1
-    },
-    {
-      "categoria": "Alimentação",
-      "atual": 2248.83,
-      "anterior": 3294.71,
-      "delta": -1045.88,
-      "delta_pct": -31.7
-    },
-    {
-      "categoria": "Posto / Automóvel",
-      "atual": 1442.66,
-      "anterior": 2531.1,
-      "delta": -1088.44,
-      "delta_pct": -43.0
+      "atual": 2639.34,
+      "anterior": 889.84,
+      "delta": 1749.5,
+      "delta_pct": 196.6
     },
     {
       "categoria": "Viagem / Lazer",
-      "atual": 913.46,
-      "anterior": 4094.47,
-      "delta": -3181.01,
-      "delta_pct": -77.7
+      "atual": 2292.37,
+      "anterior": 913.46,
+      "delta": 1378.91,
+      "delta_pct": 151.0
+    },
+    {
+      "categoria": "Assinaturas / Contas",
+      "atual": 1432.45,
+      "anterior": 647.51,
+      "delta": 784.94,
+      "delta_pct": 121.2
+    },
+    {
+      "categoria": "Posto / Automóvel",
+      "atual": 2195.56,
+      "anterior": 1442.66,
+      "delta": 752.9,
+      "delta_pct": 52.2
+    },
+    {
+      "categoria": "Casa / Vestuário",
+      "atual": 805.62,
+      "anterior": 1201.38,
+      "delta": -395.76,
+      "delta_pct": -32.9
+    },
+    {
+      "categoria": "Alimentação",
+      "atual": 1172.73,
+      "anterior": 2248.83,
+      "delta": -1076.1,
+      "delta_pct": -47.9
     }
   ],
   "categorias_crescimento_meses": {
-    "atual": "Outubro/2026",
-    "anterior": "Setembro/2026"
+    "atual": "Novembro/2026",
+    "anterior": "Outubro/2026"
   },
   "parcelas_em_aberto": [
+    {
+      "estabelecimento": "COSTEIRA PALACE HOTE",
+      "titular": "Ramon",
+      "cidade": "Natal",
+      "parcela_atual": 1,
+      "parcela_total": 6,
+      "parcelas_restantes": 5,
+      "valor_parcela": 983.75,
+      "valor_total_compra": 5902.5,
+      "valor_restante": 4918.75,
+      "competencia_referencia": "Novembro/2026"
+    },
     {
       "estabelecimento": "FABRICIANO",
       "titular": "Ramon",
       "cidade": "Coronel Fabriciano",
-      "parcela_atual": 1,
+      "parcela_atual": 2,
       "parcela_total": 12,
-      "parcelas_restantes": 11,
+      "parcelas_restantes": 10,
       "valor_parcela": 445.0,
       "valor_total_compra": 5340.0,
-      "valor_restante": 4895.0,
-      "competencia_referencia": "Outubro/2026"
-    },
-    {
-      "estabelecimento": "AIRBNB * HMSTRYD",
-      "titular": "Ramon",
-      "cidade": "Sao Paulo",
-      "parcela_atual": 3,
-      "parcela_total": 6,
-      "parcelas_restantes": 3,
-      "valor_parcela": 620.97,
-      "valor_total_compra": 3725.82,
-      "valor_restante": 1862.91,
-      "competencia_referencia": "Outubro/2026"
+      "valor_restante": 4450.0,
+      "competencia_referencia": "Novembro/2026"
     },
     {
       "estabelecimento": "GRUPO CASAS BAHIA",
       "titular": "Ramon",
       "cidade": "Rio De Janeiro",
-      "parcela_atual": 4,
-      "parcela_total": 10,
-      "parcelas_restantes": 6,
-      "valor_parcela": 265.9,
-      "valor_total_compra": 2659.0,
-      "valor_restante": 1595.4,
-      "competencia_referencia": "Outubro/2026"
-    },
-    {
-      "estabelecimento": "MERCADOLIVRE*MERCADO",
-      "titular": "Ramon",
-      "cidade": "Osasco",
       "parcela_atual": 5,
       "parcela_total": 10,
       "parcelas_restantes": 5,
-      "valor_parcela": 239.0,
-      "valor_total_compra": 2390.0,
-      "valor_restante": 1195.0,
-      "competencia_referencia": "Outubro/2026"
+      "valor_parcela": 265.9,
+      "valor_total_compra": 2659.0,
+      "valor_restante": 1329.5,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "titular": "Ramon",
+      "cidade": "Sao Paulo",
+      "parcela_atual": 4,
+      "parcela_total": 6,
+      "parcelas_restantes": 2,
+      "valor_parcela": 620.97,
+      "valor_total_compra": 3725.82,
+      "valor_restante": 1241.94,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "titular": "Ramon",
+      "cidade": "Sao Paulo",
+      "parcela_atual": 4,
+      "parcela_total": 6,
+      "parcelas_restantes": 2,
+      "valor_parcela": 620.97,
+      "valor_total_compra": 3725.82,
+      "valor_restante": 1241.94,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "titular": "Ramon",
+      "cidade": "Sao Paulo",
+      "parcela_atual": 4,
+      "parcela_total": 6,
+      "parcelas_restantes": 2,
+      "valor_parcela": 620.97,
+      "valor_total_compra": 3725.82,
+      "valor_restante": 1241.94,
+      "competencia_referencia": "Novembro/2026"
     },
     {
       "estabelecimento": "MLP*Magalu Friope",
@@ -862,16 +891,76 @@ const DATA = {
       "competencia_referencia": "Outubro/2026"
     },
     {
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "titular": "Ramon",
+      "cidade": "Osasco",
+      "parcela_atual": 6,
+      "parcela_total": 10,
+      "parcelas_restantes": 4,
+      "valor_parcela": 239.0,
+      "valor_total_compra": 2390.0,
+      "valor_restante": 956.0,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "titular": "Ramon",
+      "cidade": "Osasco",
+      "parcela_atual": 6,
+      "parcela_total": 10,
+      "parcelas_restantes": 4,
+      "valor_parcela": 239.0,
+      "valor_total_compra": 2390.0,
+      "valor_restante": 956.0,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "titular": "Ramon",
+      "cidade": "Osasco",
+      "parcela_atual": 6,
+      "parcela_total": 10,
+      "parcelas_restantes": 4,
+      "valor_parcela": 239.0,
+      "valor_total_compra": 2390.0,
+      "valor_restante": 956.0,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "titular": "Ramon",
+      "cidade": "Osasco",
+      "parcela_atual": 6,
+      "parcela_total": 10,
+      "parcelas_restantes": 4,
+      "valor_parcela": 239.0,
+      "valor_total_compra": 2390.0,
+      "valor_restante": 956.0,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "titular": "Ramon",
+      "cidade": "Osasco",
+      "parcela_atual": 6,
+      "parcela_total": 10,
+      "parcelas_restantes": 4,
+      "valor_parcela": 239.0,
+      "valor_total_compra": 2390.0,
+      "valor_restante": 956.0,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
       "estabelecimento": "NOBRE ARTE UTEN",
       "titular": "Ramon",
       "cidade": "Campinas",
-      "parcela_atual": 3,
+      "parcela_atual": 4,
       "parcela_total": 10,
-      "parcelas_restantes": 7,
+      "parcelas_restantes": 6,
       "valor_parcela": 125.0,
       "valor_total_compra": 1250.0,
-      "valor_restante": 875.0,
-      "competencia_referencia": "Outubro/2026"
+      "valor_restante": 750.0,
+      "competencia_referencia": "Novembro/2026"
     },
     {
       "estabelecimento": "OSAKA IPATINGA",
@@ -889,13 +978,13 @@ const DATA = {
       "estabelecimento": "GLOBO*Combo",
       "titular": "Ramon",
       "cidade": "Rio De Janeiro",
-      "parcela_atual": 2,
+      "parcela_atual": 3,
       "parcela_total": 12,
-      "parcelas_restantes": 10,
+      "parcelas_restantes": 9,
       "valor_parcela": 59.9,
       "valor_total_compra": 718.8,
-      "valor_restante": 599.0,
-      "competencia_referencia": "Outubro/2026"
+      "valor_restante": 539.1,
+      "competencia_referencia": "Novembro/2026"
     },
     {
       "estabelecimento": "AIRBNB * HMHMC35",
@@ -907,18 +996,6 @@ const DATA = {
       "valor_parcela": 214.73,
       "valor_total_compra": 1288.38,
       "valor_restante": 429.46,
-      "competencia_referencia": "Outubro/2026"
-    },
-    {
-      "estabelecimento": "CLINICA DAVI REZENDE",
-      "titular": "Thais",
-      "cidade": "Belo Horizonte",
-      "parcela_atual": 5,
-      "parcela_total": 10,
-      "parcelas_restantes": 5,
-      "valor_parcela": 60.5,
-      "valor_total_compra": 605.0,
-      "valor_restante": 302.5,
       "competencia_referencia": "Outubro/2026"
     },
     {
@@ -934,66 +1011,60 @@ const DATA = {
       "competencia_referencia": "Outubro/2026"
     },
     {
+      "estabelecimento": "CLINICA DAVI REZENDE",
+      "titular": "Thais",
+      "cidade": "Belo Horizonte",
+      "parcela_atual": 6,
+      "parcela_total": 10,
+      "parcelas_restantes": 4,
+      "valor_parcela": 60.5,
+      "valor_total_compra": 605.0,
+      "valor_restante": 242.0,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
       "estabelecimento": "CLUBE LIVELO*Club",
       "titular": "Ramon",
       "cidade": "Santana De Parnaiba",
-      "parcela_atual": 1,
+      "parcela_atual": 2,
       "parcela_total": 12,
-      "parcelas_restantes": 11,
-      "valor_parcela": 23.71,
-      "valor_total_compra": 284.52,
-      "valor_restante": 260.81,
-      "competencia_referencia": "Outubro/2026"
+      "parcelas_restantes": 10,
+      "valor_parcela": 23.65,
+      "valor_total_compra": 283.8,
+      "valor_restante": 236.5,
+      "competencia_referencia": "Novembro/2026"
     },
     {
-      "estabelecimento": "MLP*Magalu Pneu B",
-      "titular": "Ramon",
-      "cidade": "Uberlandia",
-      "parcela_atual": 9,
-      "parcela_total": 10,
-      "parcelas_restantes": 1,
-      "valor_parcela": 221.82,
-      "valor_total_compra": 2218.2,
-      "valor_restante": 221.82,
-      "competencia_referencia": "Outubro/2026"
-    },
-    {
-      "estabelecimento": "MARIA CHIC",
-      "titular": "Thais",
-      "cidade": "Coronel Fabriciano",
-      "parcela_atual": 3,
-      "parcela_total": 4,
-      "parcelas_restantes": 1,
-      "valor_parcela": 55.42,
-      "valor_total_compra": 221.68,
-      "valor_restante": 55.42,
-      "competencia_referencia": "Outubro/2026"
-    },
-    {
-      "estabelecimento": "TIA SASSA",
+      "estabelecimento": "TendaComercio",
       "titular": "Thais",
       "cidade": "Coronel Fabriciano",
       "parcela_atual": 1,
       "parcela_total": 2,
       "parcelas_restantes": 1,
-      "valor_parcela": 45.03,
-      "valor_total_compra": 90.06,
-      "valor_restante": 45.03,
-      "competencia_referencia": "Outubro/2026"
+      "valor_parcela": 104.98,
+      "valor_total_compra": 209.96,
+      "valor_restante": 104.98,
+      "competencia_referencia": "Novembro/2026"
+    },
+    {
+      "estabelecimento": "TikTok Shop *Tik",
+      "titular": "Ramon",
+      "cidade": "Sao Paulo",
+      "parcela_atual": 1,
+      "parcela_total": 3,
+      "parcelas_restantes": 2,
+      "valor_parcela": 31.67,
+      "valor_total_compra": 95.01,
+      "valor_restante": 63.34,
+      "competencia_referencia": "Novembro/2026"
     }
   ],
   "compras_recorrentes": [
     {
-      "estabelecimento": "TOKIO MARINE*AUTO",
-      "categoria": "Seguro",
-      "frequencia": "Mensal",
-      "valor_medio": 281.07
-    },
-    {
       "estabelecimento": "CASA DE CARNES PRIMOS",
       "categoria": "Alimentação",
       "frequencia": "Mensal",
-      "valor_medio": 109.16
+      "valor_medio": 105.42
     },
     {
       "estabelecimento": "ALTA PERFORMANCE",
@@ -1005,31 +1076,31 @@ const DATA = {
       "estabelecimento": "CONTA VIVO",
       "categoria": "Assinaturas / Contas",
       "frequencia": "Mensal",
-      "valor_medio": 82.58
+      "valor_medio": 81.86
     },
     {
       "estabelecimento": "HAMBURGUEIRO",
       "categoria": "Alimentação",
       "frequencia": "Mensal",
-      "valor_medio": 41.76
+      "valor_medio": 39.54
     },
     {
       "estabelecimento": "CAPPTA *QUENIA APARECI",
       "categoria": "Alimentação",
       "frequencia": "Mensal",
-      "valor_medio": 38.6
+      "valor_medio": 36.5
     },
     {
       "estabelecimento": "CONSUL",
       "categoria": "Alimentação",
       "frequencia": "Mensal",
-      "valor_medio": 21.61
+      "valor_medio": 22.08
     },
     {
       "estabelecimento": "JOTTA GRILL BEER",
       "categoria": "Alimentação",
       "frequencia": "Mensal",
-      "valor_medio": 12.8
+      "valor_medio": 14.57
     }
   ],
   "lancamentos": [
@@ -6252,11 +6323,1223 @@ const DATA = {
       "categoria_origem": "catalogo",
       "parcela_atual": null,
       "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "21/05",
+      "titular": "Thais",
+      "estabelecimento": "CLINICA DAVI REZENDE",
+      "cidade": "Belo Horizonte",
+      "valor": 60.5,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "27/06",
+      "titular": "Thais",
+      "estabelecimento": "MARIA CHIC",
+      "cidade": "Coronel Fabriciano",
+      "valor": 55.42,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 4
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "26/09",
+      "titular": "Thais",
+      "estabelecimento": "TIA SASSA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 45.03,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "28/09",
+      "titular": "Thais",
+      "estabelecimento": "FARMACIA INDIANA 18 PA",
+      "cidade": "Teofilo Otoni",
+      "valor": 121.25,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "30/09",
+      "titular": "Thais",
+      "estabelecimento": "CHURRASCARIA HORTO GRI",
+      "cidade": "Ipatinga",
+      "valor": 30.97,
+      "categoria": "Alimentação",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "30/09",
+      "titular": "Thais",
+      "estabelecimento": "BAR DO MARCINHO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 100.0,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "01/10",
+      "titular": "Thais",
+      "estabelecimento": "MP*CONGELADOS",
+      "cidade": "Osasco",
+      "valor": 192.0,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "03/10",
+      "titular": "Thais",
+      "estabelecimento": "MP*ABACAXIDOFLAVIO",
+      "cidade": "Marataizes",
+      "valor": 30.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "03/10",
+      "titular": "Thais",
+      "estabelecimento": "RELOJOARIA HORA CERT",
+      "cidade": "Coronel Fabriciano",
+      "valor": 145.0,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "04/10",
+      "titular": "Thais",
+      "estabelecimento": "MariaGomesAraujoS",
+      "cidade": "Timoteo",
+      "valor": 25.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "05/10",
+      "titular": "Thais",
+      "estabelecimento": "ALTA PERFORMANCE",
+      "cidade": "Coronel Fabriciano",
+      "valor": 94.9,
+      "categoria": "Saúde / Bem-estar",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "07/10",
+      "titular": "Thais",
+      "estabelecimento": "MAGIC BURGUER",
+      "cidade": "Coronel Fabriciano",
+      "valor": 20.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "08/10",
+      "titular": "Thais",
+      "estabelecimento": "MP*ELSONSPIZZAS",
+      "cidade": "Osasco",
+      "valor": 71.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "10/10",
+      "titular": "Thais",
+      "estabelecimento": "ANTHROPIC* CLAUDE SUB",
+      "cidade": "Online",
+      "valor": 110.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "17/10",
+      "titular": "Thais",
+      "estabelecimento": "DEPOSITO PAGUE MENOS",
+      "cidade": "Coronel Fabriciano",
+      "valor": 36.3,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "17/10",
+      "titular": "Thais",
+      "estabelecimento": "CONTA VIVO",
+      "cidade": "Sao Paulo",
+      "valor": 71.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "17/10",
+      "titular": "Thais",
+      "estabelecimento": "TendaComercio",
+      "cidade": "Coronel Fabriciano",
+      "valor": 104.98,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": 1,
+      "parcela_total": 2
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Thais",
+      "estabelecimento": "CONSUL QUITANDINHA",
+      "cidade": "Timoteo",
+      "valor": 68.08,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Thais",
+      "estabelecimento": "SHEIN *CITRINE MODA LTDA",
+      "cidade": "Sao Paulo",
+      "valor": 296.3,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "19/10",
+      "titular": "Thais",
+      "estabelecimento": "VAREJAO VITORIA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 24.2,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "22/10",
+      "titular": "Thais",
+      "estabelecimento": "PANIFICADORA SANTA HEL",
+      "cidade": "Timoteo",
+      "valor": 40.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "24/10",
+      "titular": "Thais",
+      "estabelecimento": "HORTIFRUTI CLEMENTE",
+      "cidade": "Timoteo",
+      "valor": 27.05,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "26/10",
+      "titular": "Thais",
+      "estabelecimento": "VAREJAO VITORIA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 14.08,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "25/12",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Pneu B",
+      "cidade": "Uberlandia",
+      "valor": 221.82,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 10,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "04/03",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Friope",
+      "cidade": "Serra",
+      "valor": 371.87,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 10,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "04/03",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Friope",
+      "cidade": "Serra",
+      "valor": 371.87,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 10,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "04/03",
+      "titular": "Ramon",
+      "estabelecimento": "MLP*Magalu Friope",
+      "cidade": "Serra",
+      "valor": 371.87,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 10,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "16/05",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "cidade": "Osasco",
+      "valor": 239.0,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "16/05",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "cidade": "Osasco",
+      "valor": 239.0,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "16/05",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "cidade": "Osasco",
+      "valor": 239.0,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "16/05",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "cidade": "Osasco",
+      "valor": 239.0,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "16/05",
+      "titular": "Ramon",
+      "estabelecimento": "MERCADOLIVRE*MERCADO",
+      "cidade": "Osasco",
+      "valor": 239.0,
+      "categoria": "Compras online",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "31/05",
+      "titular": "Ramon",
+      "estabelecimento": "GRUPO CASAS BAHIA",
+      "cidade": "Rio De Janeiro",
+      "valor": 265.9,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 5,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "05/06",
+      "titular": "Ramon",
+      "estabelecimento": "AUTO TECH",
+      "cidade": "Coronel Fabriciano",
+      "valor": 141.66,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "05/06",
+      "titular": "Ramon",
+      "estabelecimento": "AUTO TECH",
+      "cidade": "Coronel Fabriciano",
+      "valor": 141.66,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "21/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMHMC35",
+      "cidade": "Sao Paulo",
+      "valor": 214.73,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "21/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMHMC35",
+      "cidade": "Sao Paulo",
+      "valor": 214.73,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "29/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "cidade": "Sao Paulo",
+      "valor": 620.97,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "29/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "cidade": "Sao Paulo",
+      "valor": 620.97,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "29/06",
+      "titular": "Ramon",
+      "estabelecimento": "AIRBNB * HMSTRYD",
+      "cidade": "Sao Paulo",
+      "valor": 620.97,
+      "categoria": "Viagem / Lazer",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "08/07",
+      "titular": "Ramon",
+      "estabelecimento": "NOBRE ARTE UTEN",
+      "cidade": "Campinas",
+      "valor": 125.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 4,
+      "parcela_total": 10
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "09/08",
+      "titular": "Ramon",
+      "estabelecimento": "GLOBO*Combo",
+      "cidade": "Rio De Janeiro",
+      "valor": 59.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 12
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/08",
+      "titular": "Ramon",
+      "estabelecimento": "Eventim *Eventim",
+      "cidade": "Sao Paulo",
+      "valor": 265.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/08",
+      "titular": "Ramon",
+      "estabelecimento": "Eventim *Eventim",
+      "cidade": "Sao Paulo",
+      "valor": 265.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/08",
+      "titular": "Ramon",
+      "estabelecimento": "Eventim *Eventim",
+      "cidade": "Sao Paulo",
+      "valor": 265.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/08",
+      "titular": "Ramon",
+      "estabelecimento": "Eventim *Eventim",
+      "cidade": "Sao Paulo",
+      "valor": 265.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 6,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "29/08",
+      "titular": "Ramon",
+      "estabelecimento": "FABRICIANO",
+      "cidade": "Coronel Fabriciano",
+      "valor": 445.0,
+      "categoria": "Beleza / Estética",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 12
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "03/09",
+      "titular": "Ramon",
+      "estabelecimento": "CLUBE LIVELO*Club",
+      "cidade": "Santana De Parnaiba",
+      "valor": 23.65,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 2,
+      "parcela_total": 12
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "08/09",
+      "titular": "Ramon",
+      "estabelecimento": "OSAKA IPATINGA",
+      "cidade": "Ipatinga",
+      "valor": 313.33,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "08/09",
+      "titular": "Ramon",
+      "estabelecimento": "OSAKA IPATINGA",
+      "cidade": "Ipatinga",
+      "valor": 313.33,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "28/09",
+      "titular": "Ramon",
+      "estabelecimento": "CONTA VIVO",
+      "cidade": "Sao Paulo",
+      "valor": 87.0,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "28/09",
+      "titular": "Ramon",
+      "estabelecimento": "REDE RIVA 6 POSTO DE",
+      "cidade": "Timoteo",
+      "valor": 150.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "28/09",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 31.18,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "28/09",
+      "titular": "Ramon",
+      "estabelecimento": "AUTO FIAT ABELHA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 5.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "29/09",
+      "titular": "Ramon",
+      "estabelecimento": "JOTTA GRILL BEER",
+      "cidade": "Timoteo",
+      "valor": 10.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "30/09",
+      "titular": "Ramon",
+      "estabelecimento": "POSTO FAMA",
+      "cidade": "Ipatinga",
+      "valor": 200.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "30/09",
+      "titular": "Ramon",
+      "estabelecimento": "GOL LINHAS A*SHXD",
+      "cidade": "Sao Paulo",
+      "valor": 805.7,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "01/10",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 44.32,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "02/10",
+      "titular": "Ramon",
+      "estabelecimento": "CANTINA DA NECA",
+      "cidade": "Sao Domingos",
+      "valor": 84.63,
+      "categoria": "Alimentação",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "02/10",
+      "titular": "Ramon",
+      "estabelecimento": "REDE RIVA 6 POSTO DE",
+      "cidade": "Timoteo",
+      "valor": 188.9,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "03/10",
+      "titular": "Ramon",
+      "estabelecimento": "AUTO FIAT ABELHA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 430.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "04/10",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 37.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "06/10",
+      "titular": "Ramon",
+      "estabelecimento": "DONA XICA",
+      "cidade": "Timoteo",
+      "valor": 35.8,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "06/10",
+      "titular": "Ramon",
+      "estabelecimento": "NETFLIX.COM",
+      "cidade": "Sao Paulo",
+      "valor": 20.9,
+      "categoria": "Assinaturas / Contas",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "07/10",
+      "titular": "Ramon",
+      "estabelecimento": "PIZZAREZZO",
+      "cidade": "Timoteo",
+      "valor": 65.99,
+      "categoria": "Alimentação",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "08/10",
+      "titular": "Ramon",
+      "estabelecimento": "Shopee*SHOPEE*FeAcessorio",
+      "cidade": "Sao Paulo",
+      "valor": 19.99,
+      "categoria": "Compras online",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "09/10",
+      "titular": "Ramon",
+      "estabelecimento": "CENTRAL 5",
+      "cidade": "Coronel Fabriciano",
+      "valor": 200.0,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "09/10",
+      "titular": "Ramon",
+      "estabelecimento": "SABOR DO BOLO HORTO",
+      "cidade": "Ipatinga",
+      "valor": 18.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "09/10",
+      "titular": "Ramon",
+      "estabelecimento": "AI LTDA",
+      "cidade": "Coronel Fabriciano",
+      "valor": 212.0,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "09/10",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 39.2,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "10/10",
+      "titular": "Ramon",
+      "estabelecimento": "LATAM AIR*MSWZAC",
+      "cidade": "Sao Paulo",
+      "valor": 166.82,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "10/10",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *SHPSTECNOLOGIA",
+      "cidade": "Sao Paulo",
+      "valor": 18.99,
+      "categoria": "Compras online",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "10/10",
+      "titular": "Ramon",
+      "estabelecimento": "REDE RIVA 6 POSTO DE",
+      "cidade": "Timoteo",
+      "valor": 83.6,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "11/10",
+      "titular": "Ramon",
+      "estabelecimento": "IFD*LUCAS CARVALHO FERREI",
+      "cidade": "Timoteo",
+      "valor": 58.54,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "12/10",
+      "titular": "Ramon",
+      "estabelecimento": "HAMBURGUEIRO",
+      "cidade": "Timoteo",
+      "valor": 26.1,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "13/10",
+      "titular": "Ramon",
+      "estabelecimento": "CAPPTA *QUENIA APARECI",
+      "cidade": "Coronel Fabriciano",
+      "valor": 26.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "13/10",
+      "titular": "Ramon",
+      "estabelecimento": "COSTEIRA PALACE HOTE",
+      "cidade": "Natal",
+      "valor": 983.75,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": 1,
+      "parcela_total": 6
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "14/10",
+      "titular": "Ramon",
+      "estabelecimento": "CONSUL",
+      "cidade": "Ipatinga",
+      "valor": 33.51,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "14/10",
+      "titular": "Ramon",
+      "estabelecimento": "PADARIA BOM RETIRO",
+      "cidade": "Ipatinga",
+      "valor": 21.1,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "14/10",
+      "titular": "Ramon",
+      "estabelecimento": "TENNIS PLACE",
+      "cidade": "Ipatinga",
+      "valor": 199.99,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "15/10",
+      "titular": "Ramon",
+      "estabelecimento": "TIA ELIANA",
+      "cidade": "Timoteo",
+      "valor": 46.9,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "16/10",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 46.24,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "17/10",
+      "titular": "Ramon",
+      "estabelecimento": "WALLAS MARTELINHO DE OURO",
+      "cidade": "Timoteo",
+      "valor": 940.0,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "17/10",
+      "titular": "Ramon",
+      "estabelecimento": "JOTTA GRILL BEER",
+      "cidade": "Timoteo",
+      "valor": 28.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "17/10",
+      "titular": "Ramon",
+      "estabelecimento": "SHOPEE *RIVENBAZAR",
+      "cidade": "Duque De Caxias",
+      "valor": 67.93,
+      "categoria": "Compras online",
+      "categoria_origem": "regra",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Ramon",
+      "estabelecimento": "PREMIALY",
+      "cidade": "Timoteo",
+      "valor": 44.89,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Ramon",
+      "estabelecimento": "CASA DE CARNES PRIMOS",
+      "cidade": "Timoteo",
+      "valor": 83.0,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Ramon",
+      "estabelecimento": "EBN*TIKTOK SH",
+      "cidade": "Sao Paulo",
+      "valor": 94.99,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Ramon",
+      "estabelecimento": "TikTok Shop *Tik",
+      "cidade": "Sao Paulo",
+      "valor": 31.67,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": 1,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Ramon",
+      "estabelecimento": "TikTok Shop *Tik",
+      "cidade": "Sao Paulo",
+      "valor": 31.66,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Ramon",
+      "estabelecimento": "TikTok Shop *Tik",
+      "cidade": "Sao Paulo",
+      "valor": 31.66,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": 3,
+      "parcela_total": 3
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "18/10",
+      "titular": "Ramon",
+      "estabelecimento": "TikTok Shop *Tik",
+      "cidade": "Sao Paulo",
+      "valor": -94.99,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "20/10",
+      "titular": "Ramon",
+      "estabelecimento": "CENTRAL 5",
+      "cidade": "Coronel Fabriciano",
+      "valor": 150.0,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "21/10",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 43.76,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "23/10",
+      "titular": "Ramon",
+      "estabelecimento": "CUPIM BEER",
+      "cidade": "Ipatinga",
+      "valor": 42.72,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "23/10",
+      "titular": "Ramon",
+      "estabelecimento": "BRUTTUS BURGUER",
+      "cidade": "Timoteo",
+      "valor": 40.99,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "24/10",
+      "titular": "Ramon",
+      "estabelecimento": "GleidsonMorais",
+      "cidade": "Timoteo",
+      "valor": 160.0,
+      "categoria": "Posto / Automóvel",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "24/10",
+      "titular": "Ramon",
+      "estabelecimento": "FORNALHA PIZZARIA E HA",
+      "cidade": "Timoteo",
+      "valor": 86.4,
+      "categoria": "Alimentação",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "25/10",
+      "titular": "Ramon",
+      "estabelecimento": "MariaGomesAraujoS",
+      "cidade": "Timoteo",
+      "valor": 38.0,
+      "categoria": "Casa / Vestuário",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "26/10",
+      "titular": "Ramon",
+      "estabelecimento": "CENTRAL 5",
+      "cidade": "Coronel Fabriciano",
+      "valor": 150.0,
+      "categoria": "Outros",
+      "categoria_origem": "novo_pendente",
+      "parcela_atual": null,
+      "parcela_total": null
+    },
+    {
+      "competencia": "Novembro/2026",
+      "data": "27/10",
+      "titular": "Conta",
+      "estabelecimento": "IOF S/ TRANS INTER REAIS",
+      "cidade": "-",
+      "valor": 3.85,
+      "categoria": "Tarifas bancárias",
+      "categoria_origem": "catalogo",
+      "parcela_atual": null,
+      "parcela_total": null
     }
   ]
-};
+}/*__DATA__*/;
 const GOAL_MENSAL = 7000;
-const MES_CURTO = {"Julho/2026":"Jul/26", "Agosto/2026":"Ago/26", "Setembro/2026":"Set/26", "Outubro/2026":"Out/26"};
+const MES_CURTO = {"Julho/2026":"Jul/26", "Agosto/2026":"Ago/26", "Setembro/2026":"Set/26", "Outubro/2026":"Out/26", "Novembro/2026":"Nov/26"};
 
 const fmtBRL = v => (v === null || v === undefined) ? '—' : v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
 const fmtBRL0 = v => (v === null || v === undefined) ? '—' : v.toLocaleString('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0});
@@ -6372,19 +7655,10 @@ function renderDonut(elDonut, elLegend, elVal, entries, centerLabel, onClick){
   if (centerLabel) elDonut.querySelector ? null : null;
 }
 
-// viewBox dinâmico: mede a largura real renderizada do <svg> e casa o viewBox com ela,
-// para que preserveAspectRatio="none" faça um escalonamento 1:1 (sem esticar linhas/texto)
-// em vez de forçar sempre 560px de largura interna dentro de um card bem mais largo.
-function chartRenderWidth(svg){
-  const w = Math.round(svg.getBoundingClientRect().width);
-  return w > 0 ? w : 560;
-}
-
 function renderLineChart(svg, points, opts){
   opts = opts || {};
   svg.innerHTML = '';
-  const W = chartRenderWidth(svg), H = 200, padL = 10, padR = 10, padT = 28, padB = 26;
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const W = 560, H = 200, padL = 8, padR = 8, padT = 28, padB = 26;
   const maxV = Math.max(1, ...points.map(p => p.value), opts.goal || 0);
   const stepX = (W - padL - padR) / Math.max(1, points.length - 1);
   const xy = points.map((p, i) => ({
@@ -6446,41 +7720,6 @@ function personCard(container, nome, avatarBg, total, pctFatura, top3, onCatClic
   }
 }
 
-// ---------- evolução por categoria (seletor, página 1) ----------
-
-function categoriasOrdenadas(){
-  return Object.entries(DATA.categorias_totais_geral).sort((a, b) => b[1] - a[1]).map(([c]) => c);
-}
-
-let catEvoSelected = null;
-
-function buildCatEvoSelect(){
-  const sel = document.getElementById('vg-cat-evo-select');
-  const cats = categoriasOrdenadas();
-  if (!catEvoSelected || !cats.includes(catEvoSelected)) catEvoSelected = cats[0];
-  sel.innerHTML = '';
-  cats.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c; opt.textContent = c;
-    if (c === catEvoSelected) opt.selected = true;
-    sel.appendChild(opt);
-  });
-  sel.addEventListener('change', () => { catEvoSelected = sel.value; renderCategoriaEvoChart(); });
-}
-
-function renderCategoriaEvoChart(){
-  const pontos = DATA.faturas.map(fm => ({
-    label: MES_CURTO[fm.competencia] || fm.competencia,
-    value: (DATA.evolucao_mensal[fm.competencia] || {})[catEvoSelected] || 0,
-  }));
-  renderLineChart(document.getElementById('vg-cat-evo-chart'), pontos, {refIndex: meses.indexOf(refMonth)});
-  const total = pontos.reduce((s, p) => s + p.value, 0);
-  const media = total / (pontos.length || 1);
-  const maiorMes = pontos.reduce((a, b) => (b.value > a.value ? b : a), pontos[0]);
-  document.getElementById('vg-cat-evo-sub').textContent =
-    `${catEvoSelected} por mês · média de ${fmtBRL(media)}, maior em ${maiorMes.label} (${fmtBRL(maiorMes.value)}).`;
-}
-
 // ---------- página 1 · Visão Geral ----------
 
 function renderPaginaGeral(){
@@ -6531,9 +7770,6 @@ function renderPaginaGeral(){
   const pontos = DATA.faturas.map(fm => ({label: MES_CURTO[fm.competencia]||fm.competencia, value: fm.total_fatura}));
   renderLineChart(document.getElementById('vg-evo-chart'), pontos, {goal: GOAL_MENSAL, refIndex: meses.indexOf(refMonth)});
   document.getElementById('vg-evo-sub').textContent = `Total da fatura por mês (linha tracejada = meta de ${fmtBRL0(GOAL_MENSAL)}).`;
-
-  // evolução por categoria (seletor)
-  renderCategoriaEvoChart();
 
   // donut categorias
   const catTotais = {};
@@ -6632,8 +7868,7 @@ function renderPaginaCasal(){
 
 function renderDualLineChart(svg, ptsA, ptsB){
   svg.innerHTML = '';
-  const W = chartRenderWidth(svg), H = 200, padL = 10, padR = 10, padT = 24, padB = 26;
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const W = 560, H = 200, padL = 8, padR = 8, padT = 24, padB = 26;
   const maxV = Math.max(1, ...ptsA.map(p=>p.value), ...ptsB.map(p=>p.value));
   const stepX = (W - padL - padR) / Math.max(1, ptsA.length - 1);
   const ns = 'http://www.w3.org/2000/svg';
@@ -6879,14 +8114,5 @@ document.getElementById('lc-filtro-cat').addEventListener('change', (e) => { fil
 document.getElementById('lc-filtro-titular').addEventListener('change', (e) => { filtro.titular = e.target.value || null; renderPaginaLancamentos(); });
 
 buildMesSelect();
-buildCatEvoSelect();
 renderAll();
-
-// re-renderiza os gráficos ao redimensionar a janela, para o viewBox dinâmico
-// acompanhar a nova largura do card (evita distorção ao maximizar/restaurar, etc.)
-let resizeTimer = null;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(renderAll, 150);
-});
 </script>
